@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历解析系统</title>
+    <link href="../public/css/web.css" rel="stylesheet" type="text/css"></link>
+    <link rel="stylesheet" href="https://qidian.gtimg.com/lulu/edge/css/common/ui/Textarea.css">
+    <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Button.css">
+	<link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Input.css">
+</head>
+<body>
+    <header id="header">
+        <h1>简历解析系统</h1>
+        <nav id="navigation">
+          <a href="#" class="active">首页</a>
+          <a href="#">简历解析</a>
+          <a href="#">批量解析</a>
+        </nav>
+    </header>
+        <!-- <div id="preview">
+            <label for="file-input">简历解析</label>
+            <div style="font-size: xx-small;">使用说明：粘贴简历文本至文本框或者提交简历文件，并点击提交按钮。</div>
+            <textarea class="ui-textarea" id="textarea"></textarea>   
+            <img id="image-preview" src="#" alt="" />
+            <div id="choose-file">
+            <label for="file-input">
+            </label>
+            <input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png" />
+            </div>
+                <button id="submit-btn" onclick="">开始解析</button>
+            </div>
+        </div> -->
+        <div class="container">
+            <div class="container-left">
+                <h2>简历解析</h2>
+                <div style="font-size: xx-small;">使用说明：可以粘贴或输入文本进行解析；文件解析请先选择文件，文件格式可以选择图片/pdf格式。</div>
+                <textarea class="ui-textarea" id="textarea" placeholder="在此输入解析文本"></textarea>   
+                <img id="image-preview" src="#" alt="" />
+                <label for="file-input"></label>
+                <div class="space">
+                    <input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png" />
+                </div>
+                <div class="row-btn">
+                    <button id="submit-btn-text" type="normal" class="ui-button" onclick="">文本解析</button>
+                    <button id="submit-btn-file" class="ui-button" onclick="">文件解析</button>
+                </div>
+            </div>
+            <div class="container-right">
+                <div class="space">
+                    <div style="font-size: xx-small;">说明：若识别正确，点击提交结果可以存入后台。</div>
+                </div>
+                <h3>解析结果</h3>
+                <div class="space">
+                    <ul id="user-info"></ul>
+                </div>
+                <div class="row-btn">
+                    <button id="submit-btn" type="normal" class="ui-button" onclick="">提交结果</button>
+                    <!-- <button id="submit-btn" class="ui-button" onclick="">重新识别</button> -->
+                </div>
+            </div>
+	    </div>
+
+        <!-- <script src="../public/js/webhandle.js"></script> -->
+        <script>
+            const fileInput = document.getElementById("file-input");
+            const submitBtnText = document.getElementById("submit-btn-text");
+            const previewImg = document.getElementById("image-preview");   
+            
+            var inputText
+            var text = document.getElementById("textarea")
+
+            text.addEventListener("input", function() {
+                //实时监听文本框中数据 存入变量中
+                inputText = text.value
+                // 这里可以对inputText做进一步处理
+                if (inputText) {
+                    // console.log(inputText);
+                    // var output =  parse(inputText)
+                    console.log("文本处理...")
+                    //是否有文本解析的api可以调用？？
+                } 
+            });
+
+            fileInput.addEventListener("change", (event) => {
+                
+                const file = event.target.files[0];
+                console.log(file);
+                if (!file) {
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+                reader.onload = function() {
+                    const dataURL = reader.result;
+                    const imgElement = document.createElement("file");
+                    imgElement.src = dataURL;
+                    document.body.appendChild(imgElement);
+                }
+            });
+
+            submitBtnText.addEventListener("click", (event) => {
+
+                ///向后端提交文本
+                console.log("----")
+                console.log("text=", inputText)
+                console.log(typeof inputText);
+
+                const data = { text: inputText };
+
+                fetch('/nlpHandler', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    let got_data = response.text()
+                    console.log("接收data resp");
+                    console.log(typeof got_data)
+                    console.log(got_data.data)
+                    return got_data
+                    // response.json()
+                })
+                .then(got_data => {
+                    // renderData(got_data.data);
+                    const container = document.getElementById('user-info');
+                    // 清空原有的内容
+                    container.innerHTML = '';
+                    // 创建新的列表并添加到容器中
+
+                    console.log("gotdata类型");
+                    console.log(typeof got_data);
+                    console.log(got_data);
+                    const jsonObject = JSON.parse(got_data)
+                    const name = jsonObject.data[0];
+                    console.log(name);
+                    let li = window.document.createElement("li");
+                    li.innerHTML = "<p>" + "姓名： " + name + "</p>";
+                    container.appendChild(li);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+                
+                ///获取图片处理逻辑
+                // const fileInput = document.querySelector('#file-input');
+                // const file = fileInput.files[0];
+                // console.log("file：",file)
+                // if (file) {
+                    
+                // }
+                // const reader = new FileReader();
+                // reader.onload = (event) => {
+                //     previewImg.src = event.target.result;
+                // };
+                // reader.readAsDataURL(file);
+                // reader.onload = function() {
+                //     const dataURL = reader.result;
+                //     const imgElement = document.createElement("file");
+                //     imgElement.src = dataURL;
+                //     document.body.appendChild(imgElement);
+                // }
+
+                // const formData = new FormData();
+                // formData.append('image', dataURL);
+                // console.log(formData);
+
+                
+                
+
+                ///提交图片
+                //post时要把图片转为blob 后端再将blob转化成图片
+                // fetch('/imgOcr', {
+                //     method: 'POST',
+                //     body: formData ,
+                //     headers: {
+                //     'Content-Type': 'multipart/form-data'
+                //     }
+                // })
+                // .then(response => {
+                //     let data = response.text()
+                //     console.log(data)
+                //     return data
+                //     // response.json()
+                // })
+                // .then(data => {
+                //     console.log(data);
+                // })
+                // .catch(error => {
+                //     console.error(error);
+                // });
+            });
+
+        </script>
+    </body>
+</html>

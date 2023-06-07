@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.staticfile.org/Chart.js/3.9.1/chart.js"></script>
+    <link href="../public/css/many.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body>
+    <header id="header">
+        <h1>简历解析系统</h1>
+        <nav id="navigation">
+          <a href="#" class="active">首页</a>
+          <a href="#">简历解析</a>
+          <a href="#">批量解析</a>
+        </nav>
+    </header>
+    <div class="a1">
+        <div class="a11">
+            <canvas id="age" width="300" height="300">
+            </canvas>
+             
+        </div>
+        <div class="a12">
+            <canvas id="degree" width="300" height="300">
+            </canvas>
+        </div>
+        <div >
+            <canvas id="school" ></canvas>
+        </div>
+        <div>
+            <canvas id="experience" ></canvas>
+        </div>
+    </div>
+    
+    <script>
+    const age = document.getElementById('age');
+    const data1 = {
+    labels: [
+        '20-23岁',
+        '24-27岁',
+        '27岁以上'
+    ],
+    datasets: [{
+        label: '饼图实例',
+        data: [300, 50, 100],
+        backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 205, 86)'
+        ],
+        hoverOffset: 4
+    }]
+    };
+    const config1 = {
+        title:{
+            show:true,
+            text:'年龄'
+        },
+        type: 'pie',
+        data: data1,
+        options: {
+            responsive: false, // 不设置图表为响应式，根据屏幕窗口变化而变化
+            maintainAspectRatio: false,// 保持图表原有比例
+            scales: {
+            yAxes: [{
+                ticks: {
+                beginAtZero:true
+                }
+            }]
+            }
+        }
+        };
+    const Age = new Chart(age, config1);
+
+    const degree = document.getElementById('degree');
+    const data2 = {
+    labels: [
+        '本科以下',
+        '本科',
+        '硕士'
+    ],
+    datasets: [{
+        label: '饼图实例',
+        data: [300, 50, 100],
+        backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 205, 86)'
+        ],
+        hoverOffset: 4
+    }]
+    };
+    const config2 = {
+    type: 'pie',
+    data: data2,
+    options: {
+        responsive: false, // 不设置图表为响应式，根据屏幕窗口变化而变化
+        maintainAspectRatio: false,// 保持图表原有比例
+        scales: {
+        yAxes: [{
+            ticks: {
+            beginAtZero:true
+            }
+        }]
+        }
+    }
+    };
+    const Degree = new Chart(degree, config2);
+
+    
+    const school = document.getElementById('school');
+    const labels = ['大学1', '大学2', '大学3','大学4', '大学5', '大学6', '大学7'];  // 设置 X 轴上对应的标签
+    const data3 = {
+        labels: labels,
+        datasets: [{
+        label: '学校',
+        data: [65, 59, 80, 81, 56, 55, 40],
+        backgroundColor: [      // 设置每个柱形图的背景颜色
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 205, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(201, 203, 207, 0.2)'
+        ],
+        borderColor: [     //设置每个柱形图边框线条颜色
+        'rgb(255, 99, 132)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 205, 86)',
+        'rgb(75, 192, 192)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)',
+        'rgb(201, 203, 207)'
+        ],
+        borderWidth: 1     // 设置线条宽度
+    }]
+    };
+    const config3 = {
+        type: 'bar', // 设置图表类型
+        data: data3,  // 设置数据集
+        
+        options: {
+            scales: {
+            y: {
+                beginAtZero: true // 设置 y 轴从 0 开始
+            }
+            }
+        },
+        };
+    const School = new Chart(school, config3);
+
+    const experience = document.getElementById('experience');
+    const labelss = ['1', '2', '3','4', '5'];  // 设置 X 轴上对应的标签
+    const data4 = {
+        labels: labelss,
+        datasets: [{
+        label: '经验',
+        data: [65, 59, 80, 81, 56],
+        backgroundColor: [      // 设置每个柱形图的背景颜色
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 205, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        // 'rgba(153, 102, 255, 0.2)',
+        // 'rgba(201, 203, 207, 0.2)'
+        ],
+        borderColor: [     //设置每个柱形图边框线条颜色
+        'rgb(255, 99, 132)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 205, 86)',
+        'rgb(75, 192, 192)',
+        'rgb(54, 162, 235)',
+        // 'rgb(153, 102, 255)',
+        // 'rgb(201, 203, 207)'
+        ],
+        borderWidth: 1     // 设置线条宽度
+    }]
+    };
+    const config4 = {
+        type: 'bar', // 设置图表类型
+        data: data4,  // 设置数据集
+        options: {
+            scales: {
+            y: {
+                beginAtZero: true // 设置 y 轴从 0 开始
+            }
+            }
+        },
+        };
+    const Experience = new Chart(experience, config4);
+    </script>
+</body>
+</html>

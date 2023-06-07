@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历解析系统</title>
+    <link href="../public/css/web.css" rel="stylesheet" type="text/css"></link>
+    <link rel="stylesheet" href="https://qidian.gtimg.com/lulu/edge/css/common/ui/Button.css">
+  </head>
+<body>
+    <header id="header">
+        <h1>简历解析系统</h1>
+        <nav id="navigation">
+          <a href="#" class="active">首页</a>
+          <a href="#">简历填写</a>
+          <a href="#">简历识别</a>
+        </nav>
+      </header>
+      <div id="content">
+        <form id="form">
+          <label for="name">姓名</label>
+          <input type="text" id="name" name="name" />
+  
+          <label for="email">年龄</label>
+          <input type="number" id="age" name="age" />
+
+          <label for="email">电子邮件</label>
+          <input type="text" id="email" name="email" />
+  
+          <label for="phone">电话</label>
+          <input type="text" id="phone" name="phone" />
+  
+          <label for="education">最高学历</label>
+          <select id="education" name="education">
+            <option value="Bachelor">本科</option>
+            <option value="Master">硕士</option>
+            <option value="PhD">博士</option>
+            <option value="other">其他</option>
+          </select>
+  
+          <button type="submit">提交</button>
+        </form>
+        <div id="preview">
+            <label for="file-input">图片预览</label>
+            <img id="image-preview" src="#" alt="" />
+            <div id="choose-file">
+            <label for="file-input">
+            </label>
+            <form enctype="multipart/form-data">
+              file: <input type="file" id="file-input" accept=".jpg,.jpeg,.png" />
+              <div>
+                <button id="submit-btn" class="ui-button">提交</button>
+              </div>
+            </form>
+        </div>
+        <!-- <script src="../public/js/webhandle.js"></script> -->
+        <script>
+          const fileInput = document.getElementById("file-input");
+          const submitBtn = document.getElementById("submit-btn");
+          const previewImg = document.getElementById("image-preview");   
+
+          fileInput.addEventListener("change", (event) => {
+              console.log('----------1----------');
+              
+              const file = event.target.files[0];
+              console.log(file);
+              if (!file) {
+                  return;
+              }
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                  previewImg.src = event.target.result;
+              };
+              reader.readAsDataURL(file);
+          });
+
+          submitBtn.addEventListener("click", (event) => {
+              // event.preventDefault();
+              // 提交表单逻辑
+              const fileInput = document.querySelector('#file-input');
+
+              const file = fileInput.files[0];
+              console.log("file：",file);
+              if (!file) {
+                  //没有选择文件 弹出“请选择文件”提示
+                  return;
+              }
+              // const reader = new FileReader();
+              // reader.onloadstart = function(res) {
+              //   console.log('读取开始');
+              //   // 文件大于4000kb则取消加载
+              //   if(res.total > 1024*1000*4) {            
+              //       reader.abort()
+              //   } else {
+              //       console.log("开始加载")
+              //   }
+              // };
+              // reader.onload = (event) => {
+              //     document.querySelector('#file-input').src = event.target.result;
+              // };
+              // reader.readAsDataURL(file);
+              console.log('---------2---------');
+              // console.log(reader.result);
+              
+             
+            //   reader.onload = function() {
+            //     const dataURL = reader.result;
+            //     const imgElement = document.createElement("file");
+            //     imgElement.src = dataURL;
+            //     document.body.appendChild(imgElement);
+            // }
+
+              var formData = new FormData();
+              formData.append('head', 101);
+              formData.append('img', file);
+              // formData.append('image', reader.result);
+              console.log('test', formData.getAll('img'));
+
+              //post时要把图片转为blob 后端再将blob转化成图片
+              fetch('/imgOcr', {
+                  method: 'POST',
+                  body: formData ,
+                  headers: {
+                  'Content-Type': 'multipart/form-data'
+                  }
+              })
+              .then(response => {
+                  let data = response.text()
+                  console.log(data)
+                  return data
+                  // response.json()
+              })
+              .then(data => {
+                  console.log(data);
+              })
+              .catch(error => {
+                  console.error(error);
+              });
+          });
+        </script>
+    </body>
+</html>

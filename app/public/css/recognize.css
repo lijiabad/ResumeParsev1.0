@@ -1,0 +1,156 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+  }
+
+#header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+#navigation {
+    display: flex;
+    margin: 20px 0;
+}
+
+#navigation a {
+    color: #333;
+    text-decoration: none;
+    border: solid 1px #ccc;
+    padding: 10px;
+    margin-right: 10px;
+    background-color: #fff;
+}
+
+#navigation a.active {
+    background-color: #333;
+    color: #fff;
+}
+
+#content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 20px;
+}
+
+#resume_header {
+    position: relative;
+    top: 0;
+    width: 100%;
+    height: 360px;
+    z-index: 1;}
+#photo {
+    position: absolute;
+    left: 50%;
+    top: 100px;
+    width: 120px;
+    margin-left: -60px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+#resume_header .name {
+    position: absolute;
+    left: 50%;
+    top: 255px;
+    width: 200px;
+    margin-left: -100px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+#resume_header .info {
+    position: absolute;
+    left: 50%;
+    top: 300px;
+    width: 400px;
+    margin-left: -200px;
+    text-align: center;
+}
+#resume_header .info .dot {
+    font-size: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+#resume_header .info > div {
+    display: inline-block;
+    height: 30px;
+    margin-top: -10px;
+}
+
+.color-gray {
+    color: #97999e !important;
+}
+
+hr {
+    display: block;
+    unicode-bidi: isolate;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 0;
+    box-sizing: content-box;
+}
+.title_area .text_area {
+    white-space: nowrap;
+}
+.title_area .text_area span {
+    text-align: center;
+    font-size: 24px;
+    line-height: 39px;
+    padding-left: 20px;
+    padding-right: 40px;
+}
+.col-xs-1{
+    width: 8.3%;
+}
+.col-xs-5 {
+    width: 7.6%;
+}
+.col-xs-1,.col-xs-5{
+    float: left;
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+table {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    background-color: transparent;
+
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+.experience_list .company_name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+td {
+    display: table-cell;
+    vertical-align: inherit;
+}
+.inner_area{
+    margin-left: 10%;
+}

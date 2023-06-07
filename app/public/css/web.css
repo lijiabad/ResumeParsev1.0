@@ -1,0 +1,185 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+  }
+
+#header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+#navigation {
+    display: flex;
+    margin: 20px 0;
+}
+
+#navigation a {
+    color: #333;
+    text-decoration: none;
+    border: solid 1px #ccc;
+    padding: 10px;
+    margin-right: 10px;
+    background-color: #fff;
+}
+
+#navigation a.active {
+    background-color: #333;
+    color: #fff;
+}
+
+#content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 20px;
+}
+
+.container {
+    /* width: 90%; */
+    height: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px; 
+}
+
+.container-left {
+    flex: 2; /* 占三分之二 */
+    height: 800px; /* 设置高度 */
+    margin-right: 10px; /* 右边距为10像素 */
+
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px; 
+}
+
+.container-right {
+    flex: 1; /* 占三分之一 */
+    background-color: #eee;
+    height: 800px; /* 设置高度 */
+
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    border-radius: 5px; 
+}
+
+.space {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.row-btn {
+    display: flex;
+    flex-direction: row;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+
+#form {
+    width: 40%;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+#form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    
+}
+
+#form input[type="text"],
+#form select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border: solid 1px #ccc;
+}
+
+#form button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.ui-textarea{
+    margin-top: 20px;
+    width: 50%;
+    height: 300px;
+}
+#preview label {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#preview img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+#choose-file {
+    margin-top: 20px;
+    margin-left: -21%;
+}
+
+#choose-file label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+#choose-file input[type="file"] {
+    margin-bottom: 20px;
+}
+
+#file-list{
+    margin-top: 20px;
+    margin-left: -21%;
+}
+
+#submit-btn-text{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+#submit-btn-file{
+    margin-left: 10px;
+    margin-right: 10px;
+}
