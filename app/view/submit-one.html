@@ -136,10 +136,19 @@
                     console.log(typeof got_data);
                     console.log(got_data);
                     const jsonObject = JSON.parse(got_data)
-                    const name = jsonObject.data[0];
-                    console.log(name);
-                    let li = window.document.createElement("li");
-                    li.innerHTML = "<p>" + "姓名： " + name + "</p>";
+                    const name = jsonObject.data.name[0];
+                    const age = jsonObject.data.age[0];
+                    const education =  jsonObject.data.edu[0];
+                    const graduate = jsonObject.data.graduate[0];
+                    const workage = jsonObject.data.workage[0];
+
+                    // console.log(name);
+                    let li = window.document.createElement("ul");
+                    li.innerHTML = "<p>" + "姓名： " + name + "</p>" + 
+                                    "<p>" + "年龄： " + age + "</p>" +
+                                    "<p>" + "最高学历： " + education + "</p>" +
+                                    "<p>" + "毕业院校： " + graduate + "</p>" +
+                                    "<p>" + "工作年限： " + workage + "</p>" ;
                     container.appendChild(li);
                 })
                 .catch(error => {
@@ -151,7 +160,6 @@
                 // const file = fileInput.files[0];
                 // console.log("file：",file)
                 // if (file) {
-                    
                 // }
                 // const reader = new FileReader();
                 // reader.onload = (event) => {
