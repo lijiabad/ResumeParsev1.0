@@ -20,10 +20,17 @@ module.exports = app => {
   router.post('/iO', controller.ocr.test);
 
   //info 数据库操作路由
-  router.get('/getInfo', controller.resumeInfo.getInfo);
-  router.post('/addInfo', controller.resumeInfo.addInfo);
-  router.post('/updateInfo', controller.resumeInfo.updateInfo);
-  router.post('/delInfo', controller.resumeInfo.delInfo);
+  router.get('/getInfo', controller.db.getInfo);
+  router.post('/addInfo', controller.db.addInfo);
+  router.post('/updateInfo', controller.db.updateInfo);
+  router.post('/delInfo', controller.db.delInfo);
+
+  //信息统计
+  router.get('/showData', controller.showdata.dataGather)
+
+  //页面跳转
+  router.get('/jumpData', controller.home.jumpData);
+  router.get('/jumpParse', controller.home.jumpParse);
 
   //测试路径
   router.get('/test', controller.rg.test);

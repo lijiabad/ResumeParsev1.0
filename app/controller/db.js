@@ -2,12 +2,13 @@
 
 const { Controller } = require('egg');
 
-class ResumeInfoController extends Controller {
+class DbController extends Controller {
   async addInfo() {
     const { ctx } = this;
     // await ctx.render('index.html');
-    const {name, age} = ctx.request.body;
-    const result = await ctx.service.resumeInfo.addInfo(name, age);
+    const {name, age, edu, graduate, workage} = ctx.request.body;
+    // let id = 100;
+    const result = await ctx.service.resumeInfo.addInfo(name, age, edu, graduate, workage);
     if(result) {
       ctx.body = {
         status: 200,
@@ -22,6 +23,7 @@ class ResumeInfoController extends Controller {
       };
     }
   }
+  
   async delInfo() {
     const { ctx } = this;
     ctx.body = {
@@ -30,6 +32,7 @@ class ResumeInfoController extends Controller {
         data: {},
     };
   }
+
   async updateInfo() {
     const { ctx } = this;
     ctx.body = {
@@ -38,6 +41,7 @@ class ResumeInfoController extends Controller {
         data: {},
     };
   }
+
   async getInfo() {
     const { ctx } = this;
     ctx.body = {
@@ -48,4 +52,4 @@ class ResumeInfoController extends Controller {
   }
 }
 
-module.exports = ResumeInfoController;
+module.exports = DbController;

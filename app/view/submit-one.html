@@ -6,17 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>简历解析系统</title>
     <link href="../public/css/web.css" rel="stylesheet" type="text/css"></link>
+    <script src="https://cdn.staticfile.org/Chart.js/3.9.1/chart.js"></script>
     <link rel="stylesheet" href="https://qidian.gtimg.com/lulu/edge/css/common/ui/Textarea.css">
     <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Button.css">
 	<link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Input.css">
+    <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Placeholder.css">
 </head>
 <body>
     <header id="header">
         <h1>简历解析系统</h1>
         <nav id="navigation">
-          <a href="#" class="active">首页</a>
-          <a href="#">简历解析</a>
-          <a href="#">批量解析</a>
+          <div class="row-btn">
+            <a href="#" class="active">首页</a>
+            <button id="btn-rsparse" type="normal" class="ui-button" onclick="">简历解析</button>
+            <button id="btn-datashow" type="normal" class="ui-button" onclick="">数据统计</button>
+          </div>
+          <!-- <a href="#"></a> -->
         </nav>
     </header>
         <!-- <div id="preview">
@@ -56,18 +61,27 @@
                     <ul id="user-info"></ul>
                 </div>
                 <div class="row-btn">
-                    <button id="submit-btn" type="normal" class="ui-button" onclick="">提交结果</button>
+                    <button id="submit-btn-db" type="normal" class="ui-button" onclick="">提交结果</button>
                     <!-- <button id="submit-btn" class="ui-button" onclick="">重新识别</button> -->
                 </div>
             </div>
 	    </div>
 
         <!-- <script src="../public/js/webhandle.js"></script> -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+
         <script>
-            const fileInput = document.getElementById("file-input");
+            //页面跳转
+            const btn = document.getElementById("btn-datashow");
+            btn.addEventListener("click", (event) => {
+                window.location.href = "/jumpData";
+            });
+        </script>
+
+        <script>
             const submitBtnText = document.getElementById("submit-btn-text");
-            const previewImg = document.getElementById("image-preview");   
-            
+
             var inputText
             var text = document.getElementById("textarea")
 
@@ -83,28 +97,7 @@
                 } 
             });
 
-            fileInput.addEventListener("change", (event) => {
-                
-                const file = event.target.files[0];
-                console.log(file);
-                if (!file) {
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    previewImg.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-                reader.onload = function() {
-                    const dataURL = reader.result;
-                    const imgElement = document.createElement("file");
-                    imgElement.src = dataURL;
-                    document.body.appendChild(imgElement);
-                }
-            });
-
             submitBtnText.addEventListener("click", (event) => {
-
                 ///向后端提交文本
                 console.log("----")
                 console.log("text=", inputText)
@@ -126,83 +119,141 @@
                     // response.json()
                 })
                 .then(got_data => {
-                    // renderData(got_data.data);
+                    // renderData(got_data.data); //got_data是string类型
                     const container = document.getElementById('user-info');
                     // 清空原有的内容
                     container.innerHTML = '';
                     // 创建新的列表并添加到容器中
 
-                    console.log("gotdata类型");
-                    console.log(typeof got_data);
-                    console.log(got_data);
                     const jsonObject = JSON.parse(got_data)
                     const name = jsonObject.data.name[0];
                     const age = jsonObject.data.age[0];
                     const education =  jsonObject.data.edu[0];
                     const graduate = jsonObject.data.graduate[0];
                     const workage = jsonObject.data.workage[0];
+                    console.log(got_data);
+                    console.log(jsonObject);
 
-                    // console.log(name);
-                    let li = window.document.createElement("ul");
-                    li.innerHTML = "<p>" + "姓名： " + name + "</p>" + 
+                    //列表渲染
+                    let ul = window.document.createElement("ul");
+                    ul.innerHTML = "<p>" + "姓名： " + name + "</p>" + 
                                     "<p>" + "年龄： " + age + "</p>" +
                                     "<p>" + "最高学历： " + education + "</p>" +
                                     "<p>" + "毕业院校： " + graduate + "</p>" +
                                     "<p>" + "工作年限： " + workage + "</p>" ;
-                    container.appendChild(li);
+                    container.appendChild(ul);
+
+                    //先对json数据进行拆解
+                    const extractedData = {
+                        name: jsonObject.data.name[0],
+                        age: jsonObject.data.age[0],
+                        edu: jsonObject.data.edu[0],
+                        graduate: jsonObject.data.graduate[0],
+                        workage: jsonObject.data.workage[0]
+                    };
+                    console.log(typeof extractedData);
+                    console.log(extractedData);
+
+                    //数据入库操作
+                    const submitDb = document.getElementById("submit-btn-db");
+                    submitDb.addEventListener("click", function() {
+                        fetch('/addInfo', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(extractedData)
+                        })
+                        .then(response => {
+                            
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                    });
+
                 })
                 .catch(error => {
                     console.error(error);
                 });
                 
-                ///获取图片处理逻辑
-                // const fileInput = document.querySelector('#file-input');
-                // const file = fileInput.files[0];
-                // console.log("file：",file)
-                // if (file) {
-                // }
-                // const reader = new FileReader();
-                // reader.onload = (event) => {
-                //     previewImg.src = event.target.result;
-                // };
-                // reader.readAsDataURL(file);
-                // reader.onload = function() {
-                //     const dataURL = reader.result;
-                //     const imgElement = document.createElement("file");
-                //     imgElement.src = dataURL;
-                //     document.body.appendChild(imgElement);
-                // }
-
-                // const formData = new FormData();
-                // formData.append('image', dataURL);
-                // console.log(formData);
-
                 
-                
-
-                ///提交图片
-                //post时要把图片转为blob 后端再将blob转化成图片
-                // fetch('/imgOcr', {
-                //     method: 'POST',
-                //     body: formData ,
-                //     headers: {
-                //     'Content-Type': 'multipart/form-data'
-                //     }
-                // })
-                // .then(response => {
-                //     let data = response.text()
-                //     console.log(data)
-                //     return data
-                //     // response.json()
-                // })
-                // .then(data => {
-                //     console.log(data);
-                // })
-                // .catch(error => {
-                //     console.error(error);
-                // });
             });
-
         </script>
+
+        <script>
+            const fileInput = document.getElementById("file-input");
+            const submitBtnFile = document.getElementById("submit-btn-file");
+            const previewImg = document.getElementById("image-preview");
+            
+            fileInput.addEventListener("change", (event) => {
+                
+                const file = event.target.files[0];
+                console.log(file);
+                if (!file) {
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+                reader.onload = function() {
+                    const dataURL = reader.result;
+                    const imgElement = document.createElement("file");
+                    imgElement.src = dataURL;
+                    document.body.appendChild(imgElement);
+                }
+            });
+            ///获取图片处理逻辑
+            // const fileInput = document.querySelector('#file-input');
+            // const file = fileInput.files[0];
+            // console.log("file：",file)
+            // if (file) {
+            // }
+            // const reader = new FileReader();
+            // reader.onload = (event) => {
+            //     previewImg.src = event.target.result;
+            // };
+            // reader.readAsDataURL(file);
+            // reader.onload = function() {
+            //     const dataURL = reader.result;
+            //     const imgElement = document.createElement("file");
+            //     imgElement.src = dataURL;
+            //     document.body.appendChild(imgElement);
+            // }
+
+            // const formData = new FormData();
+            // formData.append('image', dataURL);
+            // console.log(formData);
+
+            
+            
+
+            ///提交图片
+            //post时要把图片转为blob 后端再将blob转化成图片
+            // fetch('/imgOcr', {
+            //     method: 'POST',
+            //     body: formData ,
+            //     headers: {
+            //     'Content-Type': 'multipart/form-data'
+            //     }
+            // })
+            // .then(response => {
+            //     let data = response.text()
+            //     console.log(data)
+            //     return data
+            //     // response.json()
+            // })
+            // .then(data => {
+            //     console.log(data);
+            // })
+            // .catch(error => {
+            //     console.error(error);
+            // });
+        </script>
+
+        <script>
+           
+        </script>
+        
     </body>
 </html>

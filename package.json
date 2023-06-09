@@ -14,7 +14,8 @@
     "egg-scripts": "^2",
     "egg-view-ejs": "^3.0.0",
     "python-shell": "^5.0.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "resume-parser": "^1.1.0"
   },
   "devDependencies": {
     "egg-bin": "^5",
