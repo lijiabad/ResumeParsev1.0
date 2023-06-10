@@ -13,11 +13,12 @@ module.exports = app => {
   router.post('/nlpHandler', controller.nlp.textParse);
 
   //图片识别ocr
-  router.post('/upload', controller.upload.upload);
-  router.post('/imgOcr', controller.ocr.imgocr);
+  router.post('/up', controller.fileHandler.imgUpload)
+  router.post('/upload', controller.file.imgUpload);
+  router.post('/imgOcr', controller.file.imgocr);
   //pdf识别ocr
-  router.post('/pdfOcr', controller.ocr.pdfocr);
-  router.post('/iO', controller.ocr.test);
+  router.post('/pdfOcr', controller.file.pdfocr);
+  router.post('/iO', controller.file.test);
 
   //info 数据库操作路由
   router.get('/getInfo', controller.db.getInfo);

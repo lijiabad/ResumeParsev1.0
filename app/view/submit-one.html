@@ -24,28 +24,17 @@
           <!-- <a href="#"></a> -->
         </nav>
     </header>
-        <!-- <div id="preview">
-            <label for="file-input">简历解析</label>
-            <div style="font-size: xx-small;">使用说明：粘贴简历文本至文本框或者提交简历文件，并点击提交按钮。</div>
-            <textarea class="ui-textarea" id="textarea"></textarea>   
-            <img id="image-preview" src="#" alt="" />
-            <div id="choose-file">
-            <label for="file-input">
-            </label>
-            <input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png" />
-            </div>
-                <button id="submit-btn" onclick="">开始解析</button>
-            </div>
-        </div> -->
         <div class="container">
             <div class="container-left">
                 <h2>简历解析</h2>
                 <div style="font-size: xx-small;">使用说明：可以粘贴或输入文本进行解析；文件解析请先选择文件，文件格式可以选择图片/pdf格式。</div>
                 <textarea class="ui-textarea" id="textarea" placeholder="在此输入解析文本"></textarea>   
                 <img id="image-preview" src="#" alt="" />
-                <label for="file-input"></label>
+                <!-- <label for="file-input">LLLLL</label> -->
                 <div class="space">
-                    <input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png" />
+                    <div class="space">
+                        <input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png" />
+                    </div>
                 </div>
                 <div class="row-btn">
                     <button id="submit-btn-text" type="normal" class="ui-button" onclick="">文本解析</button>
@@ -72,7 +61,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
 
         <script>
-            //页面跳转
+            /*页面跳转*/
             const btn = document.getElementById("btn-datashow");
             btn.addEventListener("click", (event) => {
                 window.location.href = "/jumpData";
@@ -80,6 +69,7 @@
         </script>
 
         <script>
+            /*文本解析*/
             const submitBtnText = document.getElementById("submit-btn-text");
 
             var inputText
@@ -180,14 +170,15 @@
         </script>
 
         <script>
+            /*文件解析*/
             const fileInput = document.getElementById("file-input");
             const submitBtnFile = document.getElementById("submit-btn-file");
             const previewImg = document.getElementById("image-preview");
-            
+
             fileInput.addEventListener("change", (event) => {
-                
                 const file = event.target.files[0];
                 console.log(file);
+                console.log(typeof file);
                 if (!file) {
                     return;
                 }
@@ -203,6 +194,58 @@
                     document.body.appendChild(imgElement);
                 }
             });
+
+            fileInput.addEventListener("input", (event) => {
+                
+            });
+
+            submitBtnFile.addEventListener("click", (event) => {
+                const file = fileInput.files[0];
+                // console.log(file);
+                // console.log(typeof file);
+
+                //本地上传 直接把文件目录给后端
+                const formData = new FormData();
+                formData.append('file', file);
+                console.log(formData.get('file'));
+                console.log(typeof formData);
+
+                // axios.post('/upload', formData)
+                // .then(response => {
+                //     console.log(response.data);
+                // })
+                // .catch(error => {
+                //     console.error(error);
+                // });
+
+                // const response =  fetch('/upload', {
+                //     method: 'POST',
+                //     body: formData
+                // });
+
+                // if (response.ok) {
+                //     const result =  response.json();
+                //     console.log(result); // 处理上传成功后的响应结果
+                // } else {
+                //     console.error('上传失败');
+                // }
+
+                fetch('/upload', {
+                    method: 'POST',
+                    // headers: {'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>'},
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => {
+                    // console.error('上传失败');
+                    console.error(error);
+                });
+
+            });
+
+
+
             ///获取图片处理逻辑
             // const fileInput = document.querySelector('#file-input');
             // const file = fileInput.files[0];
