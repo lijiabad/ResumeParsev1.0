@@ -193,3 +193,10 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }

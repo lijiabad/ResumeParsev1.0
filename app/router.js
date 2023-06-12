@@ -13,9 +13,8 @@ module.exports = app => {
   router.post('/nlpHandler', controller.nlp.textParse);
 
   //图片识别ocr
-  router.post('/up', controller.fileHandler.imgUpload)
   router.post('/upload', controller.file.imgUpload);
-  router.post('/imgOcr', controller.file.imgocr);
+  router.post('/img-ocr', controller.file.test);
   //pdf识别ocr
   router.post('/pdfOcr', controller.file.pdfocr);
   router.post('/iO', controller.file.test);
@@ -34,6 +33,7 @@ module.exports = app => {
   router.get('/jumpParse', controller.home.jumpParse);
 
   //测试路径
-  router.get('/test', controller.rg.test);
+  router.post('/imgocr', controller.rg.imgocr);
+  router.post('/ocr', controller.rg.imgocr);
 
 };

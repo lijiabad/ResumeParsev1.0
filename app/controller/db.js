@@ -14,16 +14,19 @@ class DbController extends Controller {
         status: 200,
         msg: '添加成功',
         data: result,
+        adddata: {
+          name: name, age: age, edu: edu, 
+          graduate: graduate, workage: workage
+        },
       };
     } else {
       ctx.body = {
         status: 201,
         msg: '添加失败',
-        data: {},
       };
     }
   }
-  
+
   async delInfo() {
     const { ctx } = this;
     ctx.body = {

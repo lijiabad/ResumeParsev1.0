@@ -7,28 +7,33 @@ const fs = require('fs');
 const { promisify } = require('util');
 const readFileAsync = promisify(fs.readFile);
 const mkdirp = require('mkdirp');
+var http = require('http');
 // 引入python子进程模块
 const { PythonShell } = require('python-shell');
 
 // const fs = require('mz/fs');
 const sendToWormhole = require('stream-wormhole');
+var AipOcr = require("baidu-aip-sdk").ocr;
 
 class FileController extends Controller {
   async imgUpload() {
     const { ctx } = this;
     // const stream = ctx.getFileStream();
     let file = ctx.request.files[0];
-    let filename = path.basename(file.filepath);
+    let timestamp = ctx.request.body.timestamp;
+    // let filename = path.basename(file.filepath);
+
+    var filename =  timestamp + ".png";
 
     let filedata = await fs.readFileSync(file.filepath);
     fs.writeFileSync(path.join('./', 'app/public/upload/img', filename), filedata);
-    
+
     ctx.body = {
       code: 200,
-      filename, filename,
+      filename: timestamp,
+      type: typeof timestamp,
       message: '上传成功！',
     };
-
   }
 
   async fileUpload() {
@@ -73,45 +78,52 @@ class FileController extends Controller {
     }
   }
 
+  async imgocr3() {
+    const { ctx } = this;
+    ctx.body = 'imgocr';
+  }
 
-  async imgocr() {
+  async imgocr2() {
     console.log('图片ocr controller');
     const { ctx } = this;
-    ctx.body = '进入ocr';
-    const file = ctx.request.files[0];
-    const image = fs.createReadStream(file.filepath);
-    const formData = new FormData();
-    formData.append('image', image, {
-      filename: file.filename,
-      contentType: file.mime
-    });
-    console.log(formData.getAll('image'));
-    // const { ctx } = this;
-    // const file = ctx.request.files[0];
     
-
-    // 将上传的文件保存到本地
-    // const filePath = path.join(__dirname, '../public/uploads', file.filename);
-    // await ctx.helper.moveFile(file.filepath, filePath);
-
-    // // 使用 Python 进行 OCR 识别
-    // const options = {
-    //   mode: 'text',
-    //   pythonPath: '/usr/bin/python',  // Python 解释器路径
-    //   scriptPath: '../python-api',  // OCR 脚本所在目录
-    //   args: [filePath]  // 传递给 OCR 脚本的参数
-    // };
+    var AipOcr = require("baidu-aip-sdk").ocr;
     
-    // PythonShell.run('OCRtest.py', options, (err, results) => {
-    //   if (err) {
-    //     console.error(err);
-    //     ctx.body = { error: err.message };
-    //   } else {
-    //     const text = results[0];
-    //     ctx.body = { text };
-    //   }
-    // });
+    //设置APPID/AK/SK（前往百度云控制台创建应用后获取相关数据）
+    var APP_ID = "32759346";
+    var API_KEY = "F9HMhS2kUnUkmLGb30Ttdhbt";
+    var SECRET_KEY = "N7thpp7rSy1cjo6Gxu7c4daGEO5OPW17";
+    
+    var client = new AipOcr(APP_ID, API_KEY, SECRET_KEY);
+    
+    // fs.writeFileSync(path.join('./', 'app/public/upload/img', filename), filedata);
+    var image = fs.readFileSync('app/public/upload/img/2023-06-11-21-25-46.png');
+
+    try {
+      // const result = await client.lexer(input_text);
+      var base64Img = new Buffer(image).toString('base64');
+      const result = await client.generalBasic(base64Img);
+
+      ctx.body = {
+        success: true,
+        data: {
+            testdata: 404,
+            result: result
+        },
+      };
+
+    } catch(err) {
+      // 如果发生网络错误
+      console.log(err);
+      ctx.status = 500;
+      ctx.body = {
+          success: false,
+          message: '服务器异常，请稍后再试。',
+      };
+    }
   }
+
+
 
   //pdf识别ocr api调用
   async pdfocr() {

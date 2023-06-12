@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Button.css">
 	<link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Input.css">
     <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Placeholder.css">
+
+    <link href="//unpkg.com/layui@2.8.6/dist/css/layui.css" rel="stylesheet">
 </head>
 <body>
     <header id="header">
@@ -37,8 +39,10 @@
                     </div>
                 </div>
                 <div class="row-btn">
-                    <button id="submit-btn-text" type="normal" class="ui-button" onclick="">文本解析</button>
-                    <button id="submit-btn-file" class="ui-button" onclick="">文件解析</button>
+                    <!-- class="ui-button" type="normal" -->
+                    <button id="submit-btn-text" type="button" class="layui-btn layui-btn-primary" lay-on="load">文本解析</button>
+                    <!-- <button id="submit-btn-text" type="button" class="layui-btn layui-btn-primary" lay-on="alert">文本解析</button> -->
+                    <button id="submit-btn-file" type="button" class="layui-btn layui-btn-primary layui-border-blue" lay-on="load">文件解析</button>
                 </div>
             </div>
             <div class="container-right">
@@ -60,16 +64,105 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
 
+        <!-- 页面跳转 -->
         <script>
-            /*页面跳转*/
             const btn = document.getElementById("btn-datashow");
             btn.addEventListener("click", (event) => {
                 window.location.href = "/jumpData";
             });
         </script>
 
+        <!-- 解析结果显示 入库操作等函数封装 -->
         <script>
-            /*文本解析*/
+            function userInfoPaerse(got_data) {
+                // renderData(got_data.data); //got_data是string类型
+                const container = document.getElementById('user-info');
+                // 清空原有的内容
+                container.innerHTML = '';
+                // 创建新的列表并添加到容器中
+
+                const jsonObject = JSON.parse(got_data);
+                let name = jsonObject.data.name[0];
+                let age = jsonObject.data.age[0];
+                let education =  jsonObject.data.edu[0];
+                let graduate = jsonObject.data.graduate[0];
+                let workage = jsonObject.data.workage[0];
+                console.log(got_data);
+                console.log(jsonObject);
+
+                //列表渲染
+                let ul = window.document.createElement("ul");
+                ul.innerHTML = "<p>" + "姓名： " + name + "</p>" + 
+                                "<p>" + "年龄： " + age + "</p>" +
+                                "<p>" + "最高学历： " + education + "</p>" +
+                                "<p>" + "毕业院校： " + graduate + "</p>" +
+                                "<p>" + "工作年限： " + workage + "</p>" ;
+                container.appendChild(ul);
+
+                //先对json数据进行拆解
+                let extractedData = {
+                    name: jsonObject.data.name[0],
+                    age: jsonObject.data.age[0],
+                    edu: jsonObject.data.edu[0],
+                    graduate: jsonObject.data.graduate[0],
+                    workage: jsonObject.data.workage[0]
+                };
+                console.log(typeof extractedData);
+                console.log(extractedData);
+
+                return extractedData;
+            }
+
+            function putText2Npl(text_str) {
+                const data = { text: text_str };
+
+                fetch('/nlpHandler', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    let got_data = response.text()
+                    console.log("接收data resp");
+                    console.log(typeof got_data)
+                    console.log(got_data.data)
+                    return got_data
+                })
+                .then(got_data => {
+                    let extractedData = {};
+                    //解析页面结果展示
+                    extractedData  = userInfoPaerse(got_data);
+                    //数据入库操作
+                    put2Db(extractedData);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+                
+            }
+
+            function put2Db(extractedData) {
+                const submitDb = document.getElementById("submit-btn-db");
+                submitDb.addEventListener("click", function() {
+                    fetch('/addInfo', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(extractedData)
+                    })
+                    .then(response => {
+                        
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                });
+            }
+       
+       </script>
+
+
+        <!-- 文本解析 -->
+        <script>
             const submitBtnText = document.getElementById("submit-btn-text");
 
             var inputText
@@ -88,6 +181,12 @@
             });
 
             submitBtnText.addEventListener("click", (event) => {
+                console.log("--------------");
+                console.log(inputText);
+                if(!inputText) {
+                    alert("请先输入解析文本!");
+                }
+                
                 ///向后端提交文本
                 console.log("----")
                 console.log("text=", inputText)
@@ -109,57 +208,12 @@
                     // response.json()
                 })
                 .then(got_data => {
-                    // renderData(got_data.data); //got_data是string类型
-                    const container = document.getElementById('user-info');
-                    // 清空原有的内容
-                    container.innerHTML = '';
-                    // 创建新的列表并添加到容器中
+                    let extractedData = {};
 
-                    const jsonObject = JSON.parse(got_data)
-                    const name = jsonObject.data.name[0];
-                    const age = jsonObject.data.age[0];
-                    const education =  jsonObject.data.edu[0];
-                    const graduate = jsonObject.data.graduate[0];
-                    const workage = jsonObject.data.workage[0];
-                    console.log(got_data);
-                    console.log(jsonObject);
-
-                    //列表渲染
-                    let ul = window.document.createElement("ul");
-                    ul.innerHTML = "<p>" + "姓名： " + name + "</p>" + 
-                                    "<p>" + "年龄： " + age + "</p>" +
-                                    "<p>" + "最高学历： " + education + "</p>" +
-                                    "<p>" + "毕业院校： " + graduate + "</p>" +
-                                    "<p>" + "工作年限： " + workage + "</p>" ;
-                    container.appendChild(ul);
-
-                    //先对json数据进行拆解
-                    const extractedData = {
-                        name: jsonObject.data.name[0],
-                        age: jsonObject.data.age[0],
-                        edu: jsonObject.data.edu[0],
-                        graduate: jsonObject.data.graduate[0],
-                        workage: jsonObject.data.workage[0]
-                    };
-                    console.log(typeof extractedData);
-                    console.log(extractedData);
-
+                    //解析页面结果展示
+                    extractedData  = userInfoPaerse(got_data);
                     //数据入库操作
-                    const submitDb = document.getElementById("submit-btn-db");
-                    submitDb.addEventListener("click", function() {
-                        fetch('/addInfo', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify(extractedData)
-                        })
-                        .then(response => {
-                            
-                        })
-                        .catch(error => {
-                            console.error(error);
-                        });
-                    });
-
+                    put2Db(extractedData);
                 })
                 .catch(error => {
                     console.error(error);
@@ -169,11 +223,12 @@
             });
         </script>
 
+        <!-- 文件解析 -->
         <script>
-            /*文件解析*/
             const fileInput = document.getElementById("file-input");
             const submitBtnFile = document.getElementById("submit-btn-file");
             const previewImg = document.getElementById("image-preview");
+            var formattedTime = '';
 
             fileInput.addEventListener("change", (event) => {
                 const file = event.target.files[0];
@@ -193,6 +248,43 @@
                     imgElement.src = dataURL;
                     document.body.appendChild(imgElement);
                 }
+
+                //获取当前时间
+                const now = new Date();
+                const year = now.getFullYear(); // 年份
+                const month = now.getMonth() + 1; // 月份（注意加1）
+                const day = now.getDate(); // 当月第几天
+                const hour = now.getHours();
+                const minute = now.getMinutes();
+                const second = now.getSeconds();
+                //输出"2023-06-08 02:55:40" string类型
+                formattedTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}-${hour.toString().padStart(2, '0')}-${minute.toString().padStart(2, '0')}-${second.toString().padStart(2, '0')}`;
+            
+                //本地上传 直接把文件目录给后端
+                const formData = new FormData();
+                formData.append('file', file);
+                //file中有时间 lastModifiedDate: Tue May 23 2023 20:42:04
+                formData.append('timestamp', formattedTime);
+                console.log(formData.get('file'));
+                console.log(formData.get('timestamp'));
+                console.log(typeof formData);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if(response.json()){
+                        return response;
+                    }
+                })
+                .then(data => {
+                    
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
             });
 
             fileInput.addEventListener("input", (event) => {
@@ -203,95 +295,69 @@
                 const file = fileInput.files[0];
                 // console.log(file);
                 // console.log(typeof file);
+                if (!file) {
+                    alert("请先输入文件 (支持pdf/jpg/jpeg/png)");
+                }
 
                 //本地上传 直接把文件目录给后端
                 const formData = new FormData();
                 formData.append('file', file);
+                //file中有时间 lastModifiedDate: Tue May 23 2023 20:42:04
+                formData.append('timestamp', formattedTime);
                 console.log(formData.get('file'));
+                console.log(formData.get('timestamp'));
                 console.log(typeof formData);
 
-                // axios.post('/upload', formData)
-                // .then(response => {
-                //     console.log(response.data);
-                // })
-                // .catch(error => {
-                //     console.error(error);
-                // });
-
-                // const response =  fetch('/upload', {
-                //     method: 'POST',
-                //     body: formData
-                // });
-
-                // if (response.ok) {
-                //     const result =  response.json();
-                //     console.log(result); // 处理上传成功后的响应结果
-                // } else {
-                //     console.error('上传失败');
-                // }
-
-                fetch('/upload', {
+                fetch('/ocr', {
                     method: 'POST',
-                    // headers: {'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>'},
+                    // headers: {'Content-Type': 'multipart/form-data'},
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => console.log(data))
+                .then(response => {
+                    let got_data = response.text();
+                    return got_data;
+                })
+                .then(got_data => {
+                    const jsonObject = JSON.parse(got_data);
+                    //识别出的文字结果 数组
+                    const result = jsonObject.result.words_result;
+
+                    let wordsString = "";
+                    for (let i = 0; i < result.length; i++) {
+                        let word = result[i].words;
+                        wordsString += word + " ";
+                    }
+
+                    // console.log("ocr结果打印");
+                    // console.log(result);
+                    console.log(wordsString);
+
+                    putText2Npl(wordsString);
+
+                })
                 .catch(error => {
-                    // console.error('上传失败');
                     console.error(error);
                 });
-
             });
 
-
-
-            ///获取图片处理逻辑
-            // const fileInput = document.querySelector('#file-input');
-            // const file = fileInput.files[0];
-            // console.log("file：",file)
-            // if (file) {
-            // }
-            // const reader = new FileReader();
-            // reader.onload = (event) => {
-            //     previewImg.src = event.target.result;
-            // };
-            // reader.readAsDataURL(file);
-            // reader.onload = function() {
-            //     const dataURL = reader.result;
-            //     const imgElement = document.createElement("file");
-            //     imgElement.src = dataURL;
-            //     document.body.appendChild(imgElement);
-            // }
-
-            // const formData = new FormData();
-            // formData.append('image', dataURL);
-            // console.log(formData);
-
             
-            
+        </script>
 
-            ///提交图片
-            //post时要把图片转为blob 后端再将blob转化成图片
-            // fetch('/imgOcr', {
-            //     method: 'POST',
-            //     body: formData ,
-            //     headers: {
-            //     'Content-Type': 'multipart/form-data'
-            //     }
-            // })
-            // .then(response => {
-            //     let data = response.text()
-            //     console.log(data)
-            //     return data
-            //     // response.json()
-            // })
-            // .then(data => {
-            //     console.log(data);
-            // })
-            // .catch(error => {
-            //     console.error(error);
-            // });
+        <script src="//unpkg.com/layui@2.8.6/dist/layui.js"></script> 
+        <script>
+            layui.use(function(){
+                var layer = layui.layer;
+                var util = layui.util;
+                // 批量事件
+                util.on('lay-on', {
+                    load: function(){
+                        var index = layer.load(0, {shade: false});
+                        setTimeout(function(){
+                            layer.close(index); // 关闭 loading
+                        }, 400);
+                    }
+                });
+            });
         </script>
 
         <script>

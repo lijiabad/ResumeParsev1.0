@@ -33,7 +33,7 @@ class NlpController extends Controller {
 
         // 调用词法分析
         try {
-            const result = await client.lexer(input_text)
+            const result = await client.lexer(input_text);
 
             /**
             提取人名

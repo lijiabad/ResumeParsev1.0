@@ -10,7 +10,7 @@ class ResumeInfoService extends Service {
     async addInfo(name, age, edu, graduate, workage) {
         try {
             const param={ name, age, edu, graduate, workage }
-            const result = await this.app.mysql.insert('resumeinfo',param);
+            const result = await this.app.mysql.insert('parseinfo',param);
             const insertSuccess = result.affectedRows===1;
             if(insertSuccess) {
                 return result;
