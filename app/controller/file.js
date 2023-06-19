@@ -123,8 +123,6 @@ class FileController extends Controller {
     }
   }
 
-
-
   //pdf识别ocr api调用
   async pdfocr() {
     const { ctx } = this;

@@ -74,8 +74,9 @@
 
         <!-- 解析结果显示 入库操作等函数封装 -->
         <script>
+            /*信息解析函数(并显示) 输入：got_data (string类型) 输出：extractedData (object类型)*/
             function userInfoPaerse(got_data) {
-                // renderData(got_data.data); //got_data是string类型
+                // renderData(got_data.data); 
                 const container = document.getElementById('user-info');
                 // 清空原有的内容
                 container.innerHTML = '';
@@ -113,6 +114,7 @@
                 return extractedData;
             }
 
+            /*文本nlp解析函数 输入： text_str (string 类型) 输出：*/
             function putText2Npl(text_str) {
                 const data = { text: text_str };
 
@@ -131,6 +133,9 @@
                 .then(got_data => {
                     let extractedData = {};
                     //解析页面结果展示
+                    console.log("++++");
+                    console.log(typeof got_data);
+
                     extractedData  = userInfoPaerse(got_data);
                     //数据入库操作
                     put2Db(extractedData);
@@ -141,6 +146,7 @@
                 
             }
 
+            /*信息字段入库函数 输入： extractedData (object类型) 输出：*/
             function put2Db(extractedData) {
                 const submitDb = document.getElementById("submit-btn-db");
                 submitDb.addEventListener("click", function() {
@@ -158,6 +164,11 @@
                 });
             }
        
+            /*读取数据库字段函数 输入：  (类型) 输出：  (类型)*/
+            function dataFromDb() {
+                
+                return params;
+            }
        </script>
 
 
