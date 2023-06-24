@@ -16,17 +16,49 @@ const sendToWormhole = require('stream-wormhole');
 var AipOcr = require("baidu-aip-sdk").ocr;
 
 class FileController extends Controller {
-  async imgUpload() {
+  async Upload() {
+    const { ctx } = this;
+    let file = ctx.request.files[0]; //获取前端文件
+    let timestamp = ctx.request.body.timestamp; //获取时间戳 以命名文件
+    var filetype = ctx.request.body.filetype; //获取文件类型
+    var filename = '';
+    
+    if(filetype == 'jpg' || filetype == 'jpeg' || filetype == 'png') {
+      filename = timestamp + ".png";
+      //文件写入app/public/upload/img
+      let filedata = await fs.readFileSync(file.filepath);
+      fs.writeFileSync(path.join('./', 'app/public/upload/img', filename), filedata);
+    } else if (filetype == 'pdf') {
+      console.log("进入进入 -----pdf");
+      filename = timestamp + ".pdf";
+      //文件写入app/public/upload/pdf
+      console.log(file.filepath);
+      let filedata = await fs.readFileSync(file.filepath);
+      console.log("进入进入--  准备写入");
+      fs.writeFileSync(path.join('./', 'app/public/upload/pdf', filename), filedata);
+    }
+    
+    ctx.body = {
+      code: 200,
+      filename: timestamp,
+      filetype: filetype,
+      message: '上传成功！',
+    };
+  }
+
+  async pdfUpload() {
     const { ctx } = this;
     // const stream = ctx.getFileStream();
     let file = ctx.request.files[0];
     let timestamp = ctx.request.body.timestamp;
     // let filename = path.basename(file.filepath);
 
-    var filename =  timestamp + ".png";
+    var filename =  timestamp + ".pdf";
 
+    console.log('filename = ', filename);
     let filedata = await fs.readFileSync(file.filepath);
-    fs.writeFileSync(path.join('./', 'app/public/upload/img', filename), filedata);
+    console.log(typeof filedata);
+    fs.writeFileSync(path.join('./', 'app/public/upload/pdf', filename), filedata);
 
     ctx.body = {
       code: 200,

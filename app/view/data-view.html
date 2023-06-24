@@ -31,19 +31,19 @@
         <div class="a12">
             <canvas id="degree" width="290" height="280"></canvas>
         </div>
-        <!-- <div>
+        <div>
             <canvas id="school"></canvas>
-        </div> -->
+        </div>
         <div>
             <canvas id="experience" ></canvas>
         </div>
-        <div>
+        <!-- <div>
             <canvas id="doughnut-chart" width="220" height="220"></canvas>
-        </div>
+        </div> -->
     </div>
 
+    <!-- 页面跳转 -->
     <script>
-        //页面跳转
         const btn = document.getElementById("btn-rsparse");
         btn.addEventListener("click", (event) => {
             window.location.href = "/jumpParse";
@@ -51,33 +51,187 @@
     </script>
     
     <script>
+        let eduData = {};
+        let schoolData = {};
+        let ageData = {};
+        let experienceData = {};
+
+        fetch('/showData', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: "",
+            })
+            .then(response => {
+                let data = response.json()
+                return data
+            })
+            .then(got_data => {
+                const data = got_data;
+                // console.log(responseData);
+                // const data = JSON.parse(responseData);
+                // console.log(data);
+                console.log(data);
+                console.log(typeof data);
+                
+                // data.forEach(person => {
+                //     const name = person.name;
+                //     const age = person.age;
+                //     const edu = person.edu;
+                //     const school = person.graduate;
+                //     let workage = person.workage;
+                    
+                //     console.log(name, age, edu, school, workage);
+                // });
+
+                // 计数的年龄变量
+                let ageBelow19 = 0;
+                let age20to23 = 0;
+                let age24to27 = 0;
+                let age28andAbove = 0;
+                // 计数的学历变量
+                let eduBelowUndergraduate = 0;
+                let eduUndergraduate = 0;
+                let eduMaster = 0;
+                let eduDoctorate = 0;
+                let eduReturnee = 0;
+                // 计数的学校变量，经验
+                const schoolCounts = {};
+                const experienceCounts = {
+                    below1: 0,
+                    '1to3': 0,
+                    '3to5': 0,
+                    above5: 0,
+                };
+
+                // 遍历个人信息数据进行计数
+                data.forEach(person => {
+                    const age = person.age;
+                    const edu = person.edu;
+                    const school = person.graduate;
+                    let workage = person.workage;
+                    if (!workage ) {
+                        workage = 0;
+                    }
+                    console.log(name, age, edu, school, workage);
+
+                    // 计算年龄段的人数
+                    if (age <= 19) {
+                        ageBelow19++;
+                    } else if (age >= 20 && age <= 23) {
+                        age20to23++;
+                    } else if (age >= 24 && age <= 27) {
+                        age24to27++;
+                    } else {
+                        age28andAbove++;
+                    }
+
+                    // 计算学历的人数
+                    if (edu === '本科以下') {
+                        eduBelowUndergraduate++;
+                    } else if (edu === '本科') {
+                        eduUndergraduate++;
+                    } else if (edu === '硕士') {
+                        eduMaster++;
+                    } else if (edu === '博士') {
+                        eduDoctorate++;
+                    } else if (edu === '海归') {
+                        eduReturnee++;
+                    }
+
+                    // 计算学校的人数
+                    if (schoolCounts[school]) {
+                        schoolCounts[school]++;
+                    } else {
+                        schoolCounts[school] = 1;
+                    }
+
+                    // 计算工作年限的人数
+                    if (workage <= 1) {
+                        experienceCounts.below1++;
+                    } else if (workage > 1 && workage <= 3) {
+                        experienceCounts['1to3']++;
+                    } else if (workage > 3 && workage <= 5) {
+                        experienceCounts['3to5']++;
+                    } else {
+                        experienceCounts.above5++;
+                    }
+                });
+
+                // 更新图表的数据
+                ageData = {
+                labels: ['19岁及以下', '20-23岁', '24-27岁', '28岁及以上'],
+                datasets: [
+                    {
+                    label: '年龄段',
+                    data: [ageBelow19, age20to23, age24to27, age28andAbove],
+                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(205, 105, 56)'],
+                    hoverOffset: 4,
+                    },
+                ],
+                };
+
+                eduData = {
+                labels: ['本科以下', '本科', '硕士', '博士', '海归'],
+                datasets: [
+                    {
+                    label: '学历',
+                    data: [eduBelowUndergraduate, eduUndergraduate, eduMaster, eduDoctorate, eduReturnee],
+                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(205, 105, 56)', 'rgb(75, 192, 192)'],
+                    hoverOffset: 4,
+                    },
+                ],
+                };
+
+                
+                // 只展示人数最多的前5个学校
+                const sortedSchoolCounts = Object.entries(schoolCounts).sort((a, b) => b[1] - a[1]);
+                const top5Schools = sortedSchoolCounts.slice(0, 5);
+                const schoolLabels = Object.keys(top5Schools);
+                const schoolCountsData = Object.values(top5Schools);
+                schoolData = {
+                    labels: schoolLabels,
+                    datasets: [
+                        {
+                        label: '学校',
+                        data: schoolCountsData,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)',
+                            'rgb(205, 105, 56)',
+                            'rgb(75, 192, 192)',
+                        ],
+                        hoverOffset: 4,
+                        },
+                    ],
+                };
+
+                experienceData = {
+                labels: ['1年及以下', '1-3年', '3-5年', '5年以上'],
+                datasets: [
+                    {
+                    label: '工作年限',
+                    data: [experienceCounts.below1, experienceCounts['1to3'], experienceCounts['3to5'], experienceCounts.above5],
+                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(205, 105, 56)'],
+                    hoverOffset: 4,
+                    },
+                ],
+                };
+
+                })
+            .catch(error => {
+                // 处理错误情况
+                console.error('Error:', error);
+            });
+
         const age = document.getElementById('age');
-        const data1 = {
-        labels: [
-            '19岁及以下',
-            '20-23岁',
-            '24-27岁',
-            '28岁及以上'
-        ],
-        datasets: [{
-            label: '饼图实例',
-            data: [300, 50, 100, 69],
-            backgroundColor: [
-            'rgb(255, 99, 132)',
-            'rgb(54, 162, 235)',
-            'rgb(255, 205, 86)',
-            'rgb(205, 105, 56)'
-            ],
-            hoverOffset: 4
-        }]
-        };
         const config1 = {
             title:{
                 show:true,
                 text:'年龄'
             },
             type: 'pie',
-            data: data1,
+            data: ageData,
             options: {
                 responsive: false, // 不设置图表为响应式，根据屏幕窗口变化而变化
                 maintainAspectRatio: false,// 保持图表原有比例
@@ -91,36 +245,11 @@
             }
             };
         const Age = new Chart(age, config1);
-        
-    </script>
-
-    <script>
 
         const degree = document.getElementById('degree');
-        const data2 = {
-        labels: [
-            '本科以下',
-            '本科',
-            '硕士',
-            '博士',
-            '海归'
-        ],
-        datasets: [{
-            label: '饼图实例',
-            data: [300, 50, 100],
-            backgroundColor: [
-            'rgb(255, 99, 132)',
-            'rgb(54, 162, 235)',
-            'rgb(255, 205, 86)',
-            'rgb(54, 162, 235)',
-            'rgb(54, 205, 235)'
-            ],
-            hoverOffset: 4
-        }]
-        };
         const config2 = {
         type: 'pie',
-        data: data2,
+        data: eduData,
         options: {
             responsive: false, // 不设置图表为响应式，根据屏幕窗口变化而变化
             maintainAspectRatio: false,// 保持图表原有比例
@@ -134,43 +263,11 @@
         }
         };
         const Degree = new Chart(degree, config2);
-
-    </script>
     
-    <script>
         const school = document.getElementById('school');
-        const labels = ['大学1', '大学2', '大学3','大学4', '大学5', '大学6', '大学7'];  // 设置 X 轴上对应的标签
-        const data3 = {
-            labels: labels,
-            datasets: [{
-            label: '学校',
-            data: [65, 59, 80, 81, 56, 55, 40],
-            backgroundColor: [      // 设置每个柱形图的背景颜色
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(255, 159, 64, 0.2)',
-            'rgba(255, 205, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(201, 203, 207, 0.2)'
-            ],
-            borderColor: [     //设置每个柱形图边框线条颜色
-            'rgb(255, 99, 132)',
-            'rgb(255, 159, 64)',
-            'rgb(255, 205, 86)',
-            'rgb(75, 192, 192)',
-            'rgb(54, 162, 235)',
-            'rgb(153, 102, 255)',
-            'rgb(201, 203, 207)'
-            ],
-            borderWidth: 0.1 ,    // 设置线条宽度
-            borderRadius: 2,
-            barThickness: 26,   //柱状粗细
-        }]
-        };
         const config3 = {
             type: 'bar', // 设置图表类型
-            data: data3,  // 设置数据集
+            data: schoolData,  // 设置数据集
             
             options: {
                 scales: {
@@ -182,41 +279,10 @@
             };
         const School = new Chart(school, config3);
 
-    </script>
-    
-    <script>
         const experience = document.getElementById('experience');
-        const labelss = ['1', '2', '3','4', '5'];  // 设置 X 轴上对应的标签
-        const data4 = {
-            labels: labelss,
-            datasets: [{
-                label: '经验',
-                data: [65, 59, 80, 81, 56],
-                backgroundColor: [      // 设置每个柱形图的背景颜色
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-                'rgba(255, 205, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                // 'rgba(153, 102, 255, 0.2)',
-                // 'rgba(201, 203, 207, 0.2)'
-                ],
-                borderColor: [     //设置每个柱形图边框线条颜色
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
-                'rgb(255, 205, 86)',
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                // 'rgb(153, 102, 255)',
-                // 'rgb(201, 203, 207)'
-                ],
-                borderWidth: 1,     // 设置线条宽度
-                barThickness: 26,   //柱状粗细
-            }]
-        };
         const config4 = {
             type: 'bar', // 设置图表类型
-            data: data4,  // 设置数据集
+            data: experienceData,  // 设置数据集v
             options: {
                 scales: {
                 y: {
@@ -228,26 +294,26 @@
         const Experience = new Chart(experience, config4);
     </script>
     <script>
-        new Chart(document.getElementById("doughnut-chart"), {
-            type: 'doughnut',
-            data: {
-                labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
-                datasets: [
-                    {
-                        label: "Population (millions)",
-                        backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-                        data: [2478,5267,734,784,433],
+        // new Chart(document.getElementById("doughnut-chart"), {
+        //     type: 'doughnut',
+        //     data: {
+        //         labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+        //         datasets: [
+        //             {
+        //                 label: "Population (millions)",
+        //                 backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+        //                 data: [2478,5267,734,784,433],
                         
-                    }
-                ]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: 'Predicted world population (millions) in 2050'
-                }
-            }
-        });
+        //             }
+        //         ]
+        //     },
+        //     options: {
+        //         title: {
+        //             display: true,
+        //             text: 'Predicted world population (millions) in 2050'
+        //         }
+        //     }
+        // });
     </script>
 </body>
 </html>
