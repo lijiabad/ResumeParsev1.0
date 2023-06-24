@@ -28,7 +28,13 @@ class NlpController extends Controller {
         //正则表达式提取
         const pattern = /\b\d{4}\b/g; // 匹配四位数字 超过四位不匹配
         const matches = input_text.match(pattern);
-        var got_years = matches.filter(match => parseInt(match) >= 1950 && parseInt(match) <= 9999);
+        var got_years = [];
+        if(matches === null) { //如果文件中没有任何数字年月 要填充0
+            got_years.push(0);
+        } else { 
+            got_years = matches.filter(match => parseInt(match) >= 1950 && parseInt(match) <= 9999);
+        }
+        
         console.log("got_years的类型", typeof got_years);
         return got_years;
     }

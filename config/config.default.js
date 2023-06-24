@@ -39,6 +39,12 @@ module.exports = appInfo => {
 
   exports.multipart = {
     mode: 'file',
+    whitelist: [
+      '.pdf', // 允许上传的文件类型，这里设置为只允许上传的文件
+      '.png',
+      '.jpg',
+      '.jpeg'
+    ],
   };
 
   exports.pythonShell = {

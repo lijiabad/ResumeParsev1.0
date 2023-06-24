@@ -40,9 +40,10 @@
                 </div>
                 <div class="row-btn">
                     <!-- class="ui-button" type="normal" -->
-                    <button id="submit-btn-text" type="button" class="layui-btn layui-btn-primary" lay-on="load">文本解析</button>
+                    <button id="submit-btn-text" type="button" class="layui-btn layui-btn-primary layui-border-black" lay-on="load">文本解析</button>
                     <!-- <button id="submit-btn-text" type="button" class="layui-btn layui-btn-primary" lay-on="alert">文本解析</button> -->
-                    <button id="submit-btn-file" type="button" class="layui-btn layui-btn-primary layui-border-blue" lay-on="load">文件解析</button>
+                    <button id="submit-btn-file" type="button" class="layui-btn layui-btn-primary layui-border-blue" lay-on="load">图片解析</button>
+                    <button id="submit-btn-pdf" type="button" class="layui-btn layui-btn-primary layui-border-green" lay-on="load">pdf解析</button>
                 </div>
             </div>
             <div class="container-right">
@@ -169,6 +170,21 @@
                 
                 return params;
             }
+
+            /*获取当前时间 格式：year-month-day-hour-min-sec*/
+            function getNowTime() {
+                const now = new Date();
+                const year = now.getFullYear(); // 年份
+                const month = now.getMonth() + 1; // 月份（注意加1）
+                const day = now.getDate(); // 当月第几天
+                const hour = now.getHours();
+                const minute = now.getMinutes();
+                const second = now.getSeconds();
+                //输出string类型
+                var formattedTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}-${hour.toString().padStart(2, '0')}-${minute.toString().padStart(2, '0')}-${second.toString().padStart(2, '0')}`;
+                return formattedTime;
+            }
+
        </script>
 
 
@@ -196,6 +212,7 @@
                 console.log(inputText);
                 if(!inputText) {
                     alert("请先输入解析文本!");
+                    return;
                 }
                 
                 ///向后端提交文本
@@ -234,6 +251,73 @@
             });
         </script>
 
+        <!-- pdf解析 -->
+        <script>
+            const submitBtnPdf = document.getElementById("submit-btn-pdf");
+            // var formattedTime = '';
+
+            submitBtnPdf.addEventListener("click", (event) => {
+                const file = fileInput.files[0];
+                // console.log(file);
+                // console.log(typeof file);
+                if (!file) {
+                    alert("请先导入文件!");
+                    return;
+                }
+
+                //本地上传 直接把文件目录给后端
+                const formData = new FormData();
+                formData.append('file', file);
+                //file中有时间 lastModifiedDate: Tue May 23 2023 20:42:04
+                formData.append('timestamp', formattedTime);
+                console.log(formData.get('file'));
+                console.log(formData.get('timestamp'));
+                console.log(typeof formData);
+
+                fetch('/pdfocr', {
+                    method: 'POST',
+                    // headers: {'Content-Type': 'multipart/form-data'},
+                    body: formData
+                })
+                .then(response => {
+                    let got_data = response.text();
+                    console.log("pdf gotdata");
+                    console.log(got_data);
+                    return got_data;
+                })
+                .then(got_data => {
+                    const jsonObject = JSON.parse(got_data);
+                    console.log("pdf jsonObject", jsonObject);
+                    //识别出的文字结果 数组
+                    const result = jsonObject.result.body;
+                    console.log("jsonObject result", result);
+
+                    // 中文正则表达式
+                    const chineseRegExp = /[\u4e00-\u9fa5]+/g;
+                    // 使用match方法匹配中文字符
+                    const chineseArr = result.match(chineseRegExp);
+                    // 将中文字符合并为一个string，用空格隔开
+                    const chineseString = chineseArr.join(' ');
+                    // let jsonObj = JSON.parse(result);
+
+                    // let wordsString = "";
+                    // for (let i = 0; i < jsonObj.length; i++) {
+                    //     let word = jsonObj[i].words;
+                    //     wordsString += word + " ";
+                    // }
+                    // // console.log("ocr结果打印");
+                    // console.log(jsonObj);
+                    console.log(typeof chineseString);
+                    putText2Npl(chineseString);
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            });
+
+        </script>
+
         <!-- 文件解析 -->
         <script>
             const fileInput = document.getElementById("file-input");
@@ -261,27 +345,27 @@
                 }
 
                 //获取当前时间
-                const now = new Date();
-                const year = now.getFullYear(); // 年份
-                const month = now.getMonth() + 1; // 月份（注意加1）
-                const day = now.getDate(); // 当月第几天
-                const hour = now.getHours();
-                const minute = now.getMinutes();
-                const second = now.getSeconds();
-                //输出"2023-06-08 02:55:40" string类型
-                formattedTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}-${hour.toString().padStart(2, '0')}-${minute.toString().padStart(2, '0')}-${second.toString().padStart(2, '0')}`;
-            
+                formattedTime = this.getNowTime();
                 //本地上传 直接把文件目录给后端
                 const formData = new FormData();
                 formData.append('file', file);
                 //file中有时间 lastModifiedDate: Tue May 23 2023 20:42:04
                 formData.append('timestamp', formattedTime);
+
+                var filetype = '';
+                var filename = formData.get('file').name;
+                //得到file中name 判断文件类型
+                var index = filename.lastIndexOf(".");
+                if (index > 0) { filetype = filename.substring(index + 1); }
+                formData.append('filetype', filetype);
                 console.log(formData.get('file'));
                 console.log(formData.get('timestamp'));
                 console.log(typeof formData);
 
                 fetch('/upload', {
                     method: 'POST',
+                    // headers: { 'Content-Type': 'application/pdf' },
+                    // headers: { 'Content-Type': 'multipart/form-data' },
                     body: formData
                 })
                 .then(response => {
@@ -290,7 +374,6 @@
                     }
                 })
                 .then(data => {
-                    
                 })
                 .catch(error => {
                     console.error(error);
@@ -308,6 +391,7 @@
                 // console.log(typeof file);
                 if (!file) {
                     alert("请先输入文件 (支持pdf/jpg/jpeg/png)");
+                    return;
                 }
 
                 //本地上传 直接把文件目录给后端
@@ -319,7 +403,7 @@
                 console.log(formData.get('timestamp'));
                 console.log(typeof formData);
 
-                fetch('/ocr', {
+                fetch('/imgocr', {
                     method: 'POST',
                     // headers: {'Content-Type': 'multipart/form-data'},
                     body: formData
