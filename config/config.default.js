@@ -73,6 +73,14 @@ module.exports = appInfo => {
     agent: false,
   };
 
+  exports.session = {
+    key: 'SESSION_KEY', // session 对象的 key，用于存储在 cookie 中
+    maxAge: 24 * 3600 * 1000, // session 的最大有效时间，单位为毫秒
+    httpOnly: true, // 是否只允许服务器修改 cookie
+    encrypt: true, // 是否对 cookie 进行加密
+    renew: true, // 每次访问页面都会给 session 取一个新的过期时间，这样可以保持用户登录状态
+  };
+
   return {
     ...config,
     ...userConfig,

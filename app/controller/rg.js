@@ -39,6 +39,7 @@ class RgController extends Controller {
     var filepath = 'app/public/upload/img/' + timestamp + '.png';
     var image = fs.readFileSync(filepath);
 
+    // let result;
     try {
       var base64Img = new Buffer(image).toString('base64');
       const result = await client.generalBasic(base64Img);
@@ -47,6 +48,14 @@ class RgController extends Controller {
         success: true,
         result: result
       };
+
+      var imgocrResult = {result : result};
+      ctx.session.imgocrResult = JSON.stringify(imgocrResult);
+      console.log("imgocrResult--------------------");
+      console.log(ctx.session.imgocrResult);
+      console.log("imgocrResult--------------------");
+      module.exports = ctx.session.imgocrResult ;
+
 
     } catch(err) {
       // 如果发生网络错误
@@ -57,6 +66,10 @@ class RgController extends Controller {
           message: '服务器异常，请稍后再试。',
       };
     }
+  }
+
+  passVar2nlp(result) {
+    return result;
   }
 
   async pdfocr() {
