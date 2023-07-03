@@ -44,7 +44,7 @@ body {
     align-items: flex-start;
     margin: 20px;
 }
-.a1 canvas{
+/* .a1 canvas{
     float: left;
     margin-top: 100px;
     margin-left: 200px;
@@ -54,7 +54,101 @@ body {
 }
 .a12 p{
     text-align: center;
+} */
+.big {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+.chart-container { 
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+
+/* #exp{
+    width: 500px;
+    margin-left: 50px;
+
+}
+#educ{
+    width: 500px;
+    margin-right:  20px;
+    
+} */
+.info {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+.box {
+    background-color: #eee;
+    padding-top: 40px;
+    padding-bottom: 20px;
+    /* padding: 10px; */
+    display: flex;
+    justify-content: center; 
+    /* flex-flow: row; */
+    width: 1300px;
+    height: 100px;
+    /* margin-left: 25px;
+    margin-right: 25px; */
+    background-color: gainsboro;
+    border-radius: 5px;
+  }
+
+.box p {
+    color: #000;
+  }
+
+.icon-container {
+position: relative;
+display: inline-block;
 }
 
+.icon {
+width: 50px; /* 图标宽度 */
+height: 50px; /* 图标高度 */
+background-image: url('./account.svg'); /* 图标的路径 */
+background-size: cover;
+}
 
+.badge {
+position: absolute;
+top: -5px; /* 数字相对于容器上边缘的偏移量 */
+right: -5px; /* 数字相对于容器右边缘的偏移量 */
+display: flex;
+justify-content: center;
+align-items: center;
+width: 20px; /* 数字容器的宽度 */
+height: 20px; /* 数字容器的高度 */
+background-color: red; /* 背景颜色 */
+color: white; /* 文字颜色 */
+font-size: 16px; /* 字体大小 */
+border-radius: 50%; /* 圆形边框 */
+}
+.stat-box {
+display: flex;
+align-items: center;
+padding: 10px;
+background-color: rgba(255, 255, 255, 0.753);
+border-radius: 5px;
+margin-left: 100xp;
+margin-right: 100px;
+}
 
+.stat-box img {
+width: 24px;
+height: 24px;
+margin-right: 10px;
+}
+
+.stat-box .stat-number {
+font-size: 18px;
+font-weight: bold;
+}

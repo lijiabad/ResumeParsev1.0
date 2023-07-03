@@ -5,13 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"></script>
+
     <script src="https://cdn.staticfile.org/Chart.js/3.9.1/chart.js"></script>
-    <link href="../public/css/many.css" rel="stylesheet" type="text/css"></link>
+    <link href="./many.css" rel="stylesheet" type="text/css"></link>
     <link rel="stylesheet" href="https://qidian.gtimg.com/lulu/edge/css/common/ui/Textarea.css">
     <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Button.css">
-	<link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Input.css">
+	  <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Input.css">
     <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Placeholder.css">
-</head>
+    <!-- <link href="//cdn.staticfile.org/layui/2.8.8/css/layui.css" rel="stylesheet"> -->
+  </head>
 <body>
     <header id="header">
         <h1>简历解析系统</h1>
@@ -24,26 +27,55 @@
           <!-- <a href="#"></a> -->
         </nav>
     </header>
-    <div class="a1">
-        <div class="a11">
-            <canvas id="age" width="280" height="280"></canvas>
+    <h1>简历统计信息</h1>
+    <div class="big">
+      <div class="info">
+        <div class="box">
+          <!-- <blockquote class="layui-elem-quote layui-text">
+            Layui 框体布局内容主体区域
+          </blockquote> -->
+          <div class="stat-box">
+          <img src="account.svg" alt="Person Icon">
+          <p >简历总数: <span id="total">100</span></p>
+          <!-- <span class="stat-number">1000</span> -->
+          </div>
+        <!-- </div>
+        <div class="box"> -->
+          <div class="stat-box">
+          <img src="age.svg" alt="Person Icon">
+          <p class="font-sz">年龄区间:  <span id="total">19-30</span></p>
+          <!-- <span class="stat-number">1000</span> -->
+          </div>
+        <!-- </div>
+        <div class="box"> -->
+          <div class="stat-box">
+          <img src="gender.svg" alt="Person Icon">
+          <p >性别比例: <span id="total">2:3</span></p>
+          <!-- <span class="stat-number">1000</span> -->
+          </div>
+        <!-- </div>
+        <div class="box"> -->
+          <div class="stat-box">
+          <img src="works.svg" alt="Person Icon">
+          <p >最高工作年限: <span id="total">10</span></p>
+          <!-- <span class="stat-number">1000</span> -->
+          </div>
         </div>
-        <div class="a12">
-            <canvas id="degree" width="290" height="280"></canvas>
-        </div>
-        <div>
-            <canvas id="school"></canvas>
-        </div>
-        <div>
-            <canvas id="experience" ></canvas>
-        </div>
-        <!-- <div>
-            <canvas id="doughnut-chart" width="220" height="220"></canvas>
+        <!-- <div class="icon-container">
+          <span class="icon"></span>
+          <span class="badge">5</span>
         </div> -->
+      </div>
+    </div>
+  
+    <div class="chart-container">
+      <div class="exp"><canvas id="experience" class="chart"></canvas></div>
+      <div class="educ"><canvas id="education" class="chart"></canvas></div>
+      
     </div>
 
-    <!-- 页面跳转 -->
     <script>
+        //页面跳转
         const btn = document.getElementById("btn-rsparse");
         btn.addEventListener("click", (event) => {
             window.location.href = "/jumpParse";
@@ -51,269 +83,251 @@
     </script>
     
     <script>
-        let eduData = {};
-        let schoolData = {};
-        let ageData = {};
-        let experienceData = {};
+    // const resumeData = [
+    //       { name: '张大', age: 20, edu: '本科以下', graduate: '湖南大学', workage: 1 },
+    //       { name: '李二', age: 25, edu: '本科', graduate: '湖南大学', workage: 2 },
+    //       { name: '王三', age: 30, edu: '硕士', graduate: '湖南大学', workage: 3 },
+    //       { name: '赵四', age: 35, edu: '博士', graduate: '湖南大学', workage: 5},
+    //       { name: '钱五', age: 40, edu: '海归', graduate: '湖南大学', workage: 10 },
+    //       { name: '张大', age: 20, edu: '本科以下', graduate: '湖南大学', workage: 1 },
+    //       { name: '李二', age: 25, edu: '本科', graduate: '湖南大学', workage: 2 },
+    //       { name: '王三', age: 30, edu: '硕士', graduate: '湖南大学', workage: 3 },
+    //       { name: '赵四', age: 35, edu: '博士', graduate: '湖南大学', workage: 5},
+    //       { name: '钱五', age: 40, edu: '海归', graduate: '湖南大学', workage: 10 },
+    //       { name: '张大', age: 20, edu: '本科以下', graduate: '湖南大学', workage: 1 },
+    //       { name: '李二', age: 25, edu: '本科', graduate: '湖南大学', workage: 2 },
+    //       { name: '王三', age: 30, edu: '硕士', graduate: '湖南大学', workage: 3 },
+    //       { name: '赵四', age: 35, edu: '博士', graduate: '湖南大学', workage: 5},
+    //       { name: '钱五', age: 40, edu: '海归', graduate: '湖南大学', workage: 10 },
+    //       { name: '张大', age: 20, edu: '本科以下', graduate: '湖南大学', workage: 1 },
+    //       { name: '李二', age: 25, edu: '本科', graduate: '湖南大学', workage: 2 },
+    //       { name: '王三', age: 30, edu: '硕士', graduate: '湖南大学', workage: 3 },
+    //       { name: '赵四', age: 35, edu: '博士', graduate: '湖南大学', workage: 5},
+    //       { name: '钱五', age: 40, edu: '海归', graduate: '湖南大学', workage: 10 },{ name: '张大', age: 20, edu: '本科以下', graduate: '湖南大学', workage: 1 },
+    //       { name: '李二', age: 25, edu: '本科', graduate: '湖南大学', workage: 2 },
+    //       { name: '王三', age: 30, edu: '硕士', graduate: '湖南大学', workage: 3 },
+    //       { name: '赵四', age: 35, edu: '博士', graduate: '湖南大学', workage: 5},
+    //       { name: '钱五', age: 40, edu: '海归', graduate: '湖南大学', workage: 10 }
+    //     ];
+    // 获取简历数据
+    function fetchResumeData() {
+      fetch('/showData') 
+        .then(response => response.json())
+        .then(data => {
+          updatePage(data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
 
-        fetch('/showData', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: "",
-            })
-            .then(response => {
-                let data = response.json()
-                return data
-            })
-            .then(got_data => {
-                const data = got_data;
-                // console.log(responseData);
-                // const data = JSON.parse(responseData);
-                // console.log(data);
-                console.log(data);
-                console.log(typeof data);
-                
-                // data.forEach(person => {
-                //     const name = person.name;
-                //     const age = person.age;
-                //     const edu = person.edu;
-                //     const school = person.graduate;
-                //     let workage = person.workage;
-                    
-                //     console.log(name, age, edu, school, workage);
-                // });
+    function updatePage(resumeData) {
+      // 总简历数
+      document.getElementById('total').textContent = resumeData.length;
 
-                // 计数的年龄变量
-                let ageBelow19 = 0;
-                let age20to23 = 0;
-                let age24to27 = 0;
-                let age28andAbove = 0;
-                // 计数的学历变量
-                let eduBelowUndergraduate = 0;
-                let eduUndergraduate = 0;
-                let eduMaster = 0;
-                let eduDoctorate = 0;
-                let eduReturnee = 0;
-                // 计数的学校变量，经验
-                const schoolCounts = {};
-                const experienceCounts = {
-                    below1: 0,
-                    '1to3': 0,
-                    '3to5': 0,
-                    above5: 0,
-                };
+      // 年龄区间
+      const ages = resumeData.map(resume => resume.age);
+      const minAge = Math.min(...ages);
+      const maxAge = Math.max(...ages);
+      document.getElementById('age').textContent = `${minAge} - ${maxAge}`;
 
-                // 遍历个人信息数据进行计数
-                data.forEach(person => {
-                    const age = person.age;
-                    const edu = person.edu;
-                    const school = person.graduate;
-                    let workage = person.workage;
-                    if (!workage ) {
-                        workage = 0;
-                    }
-                    console.log(name, age, edu, school, workage);
+      // 工作经验图
+      const experienceData = getexperiencedata(resumeData);
+      expChart('experience', experienceData, [
+        '1年及以下',
+        '1-3年',
+        '3-5年',
+        '5年以上'
+      ]);
 
-                    // 计算年龄段的人数
-                    if (age <= 19) {
-                        ageBelow19++;
-                    } else if (age >= 20 && age <= 23) {
-                        age20to23++;
-                    } else if (age >= 24 && age <= 27) {
-                        age24to27++;
-                    } else {
-                        age28andAbove++;
-                    }
+      // 学历图
+      const educationData = geteducationdata(resumeData);
+      eduChart('education', educationData, [
+        '本科以下',
+        '本科',
+        '硕士',
+        '博士',
+        '海归'
+      ]);
+    }
 
-                    // 计算学历的人数
-                    if (edu === '本科以下') {
-                        eduBelowUndergraduate++;
-                    } else if (edu === '本科') {
-                        eduUndergraduate++;
-                    } else if (edu === '硕士') {
-                        eduMaster++;
-                    } else if (edu === '博士') {
-                        eduDoctorate++;
-                    } else if (edu === '海归') {
-                        eduReturnee++;
-                    }
+    // 工作经验数据
+    function getexperiencedata(resumeData) {
+      const experienceCount = {
+        '1年及以下': 0,
+        '1-3年': 0,
+        '3-5年': 0,
+        '5年以上': 0
+      };
 
-                    // 计算学校的人数
-                    if (schoolCounts[school]) {
-                        schoolCounts[school]++;
-                    } else {
-                        schoolCounts[school] = 1;
-                    }
-
-                    // 计算工作年限的人数
-                    if (workage <= 1) {
-                        experienceCounts.below1++;
-                    } else if (workage > 1 && workage <= 3) {
-                        experienceCounts['1to3']++;
-                    } else if (workage > 3 && workage <= 5) {
-                        experienceCounts['3to5']++;
-                    } else {
-                        experienceCounts.above5++;
-                    }
-                });
-
-                // 更新图表的数据
-                ageData = {
-                labels: ['19岁及以下', '20-23岁', '24-27岁', '28岁及以上'],
-                datasets: [
-                    {
-                    label: '年龄段',
-                    data: [ageBelow19, age20to23, age24to27, age28andAbove],
-                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(205, 105, 56)'],
-                    hoverOffset: 4,
-                    },
-                ],
-                };
-
-                eduData = {
-                labels: ['本科以下', '本科', '硕士', '博士', '海归'],
-                datasets: [
-                    {
-                    label: '学历',
-                    data: [eduBelowUndergraduate, eduUndergraduate, eduMaster, eduDoctorate, eduReturnee],
-                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(205, 105, 56)', 'rgb(75, 192, 192)'],
-                    hoverOffset: 4,
-                    },
-                ],
-                };
-
-                
-                // 只展示人数最多的前5个学校
-                const sortedSchoolCounts = Object.entries(schoolCounts).sort((a, b) => b[1] - a[1]);
-                const top5Schools = sortedSchoolCounts.slice(0, 5);
-                const schoolLabels = Object.keys(top5Schools);
-                const schoolCountsData = Object.values(top5Schools);
-                schoolData = {
-                    labels: schoolLabels,
-                    datasets: [
-                        {
-                        label: '学校',
-                        data: schoolCountsData,
-                        backgroundColor: [
-                            'rgb(255, 99, 132)',
-                            'rgb(54, 162, 235)',
-                            'rgb(255, 205, 86)',
-                            'rgb(205, 105, 56)',
-                            'rgb(75, 192, 192)',
-                        ],
-                        hoverOffset: 4,
-                        },
-                    ],
-                };
-
-                experienceData = {
-                labels: ['1年及以下', '1-3年', '3-5年', '5年以上'],
-                datasets: [
-                    {
-                    label: '工作年限',
-                    data: [experienceCounts.below1, experienceCounts['1to3'], experienceCounts['3to5'], experienceCounts.above5],
-                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(205, 105, 56)'],
-                    hoverOffset: 4,
-                    },
-                ],
-                };
-
-                })
-            .catch(error => {
-                // 处理错误情况
-                console.error('Error:', error);
-            });
-
-        const age = document.getElementById('age');
-        const config1 = {
-            title:{
-                show:true,
-                text:'年龄'
-            },
-            type: 'pie',
-            data: ageData,
-            options: {
-                responsive: false, // 不设置图表为响应式，根据屏幕窗口变化而变化
-                maintainAspectRatio: false,// 保持图表原有比例
-                scales: {
-                yAxes: [{
-                    ticks: {
-                    beginAtZero:true
-                    }
-                }]
-                }
-            }
-            };
-        const Age = new Chart(age, config1);
-
-        const degree = document.getElementById('degree');
-        const config2 = {
-        type: 'pie',
-        data: eduData,
-        options: {
-            responsive: false, // 不设置图表为响应式，根据屏幕窗口变化而变化
-            maintainAspectRatio: false,// 保持图表原有比例
-            scales: {
-            yAxes: [{
-                ticks: {
-                beginAtZero:true
-                }
-            }]
-            }
+      resumeData.forEach(resume => {
+        if (resume.workage <= 1) {
+          experienceCount['1年及以下']++;
+        } else if (resume.workage <= 3) {
+          experienceCount['1-3年']++;
+        } else if (resume.workage <= 5) {
+          experienceCount['3-5年']++;
+        } else {
+          experienceCount['5年以上']++;
         }
-        };
-        const Degree = new Chart(degree, config2);
-    
-        const school = document.getElementById('school');
-        const config3 = {
-            type: 'bar', // 设置图表类型
-            data: schoolData,  // 设置数据集
-            
-            options: {
-                scales: {
-                y: {
-                    beginAtZero: true // 设置 y 轴从 0 开始
-                }
-                }
-            },
-            };
-        const School = new Chart(school, config3);
+      });
 
-        const experience = document.getElementById('experience');
-        const config4 = {
-            type: 'bar', // 设置图表类型
-            data: experienceData,  // 设置数据集v
-            options: {
-                scales: {
-                y: {
-                    beginAtZero: true // 设置 y 轴从 0 开始
-                }
-                }
-            },
-            };
-        const Experience = new Chart(experience, config4);
-    </script>
-    <script>
-        // new Chart(document.getElementById("doughnut-chart"), {
-        //     type: 'doughnut',
-        //     data: {
-        //         labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
-        //         datasets: [
-        //             {
-        //                 label: "Population (millions)",
-        //                 backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-        //                 data: [2478,5267,734,784,433],
-                        
-        //             }
-        //         ]
-        //     },
-        //     options: {
-        //         title: {
-        //             display: true,
-        //             text: 'Predicted world population (millions) in 2050'
-        //         }
-        //     }
-        // });
-    </script>
+      return Object.values(experienceCount);
+    }
+
+    // 学历数据
+    function geteducationdata(resumeData) {
+      const eduCount = {
+        '本科以下': 0,
+        '本科': 0,
+        '硕士': 0,
+        '博士': 0,
+        '海归': 0
+      };
+
+      resumeData.forEach(resume => {
+        // eduCount[resume.edu]++;
+        if (resume.edu =='中专' || resume.edu =='大专') {
+          eduCount['本科以下']++;
+        } else if (resume.edu =='本科') {
+          eduCount['本科']++;
+        } else if (resume.edu =='硕士') {
+          eduCount['硕士']++;
+        } else if (resume.edu =='博士') {
+          eduCount['博士']++;
+        } else if (resume.edu =='海归') {
+          eduCount['海归']++;
+        } 
+      });
+
+      return Object.values(eduCount);
+    }
+
+
+    function expChart(containerId, data, categories) {
+      const container = document.getElementById(containerId);
+      const chart = echarts.init(container,null,{width:600,height:400});
+
+      const option = {
+        title:{
+          text:'经验统计',
+          textStyle:{
+            color:'black'
+          },
+          borderWidth:1,
+          left:50,
+          top:10
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow',
+          },
+        },
+        xAxis: {
+          data: categories,
+          axisLabel: {
+          interval: 0,  // 横坐标标签全部显示
+        }},
+        yAxis: {
+          type:'value',
+          max: Math.max(...data) * 1.2,  
+          axisLabel: {
+          interval: 0,  // 纵坐标标签全部显示
+        },},
+        series: [{
+          type: 'bar',
+          data: data,
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          },
+          barWidth: '40%'     //柱子粗细
+        }]
+        }
+
+      chart.setOption(option);
+    }
+    function eduChart(containerId, data, categories) {
+      const container = document.getElementById(containerId);
+      const chart = echarts.init(container,null,{width:600,height:400});
+
+      const option = {
+        title:{
+          text:'学历统计',
+          textStyle:{
+            color:'black'
+          },
+          borderWidth:1,
+          left:50,
+          top:10
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow',
+          },
+        },
+        xAxis: {
+          data: categories,
+          axisLabel: {
+          interval: 0,  // 横坐标标签全部显示
+        }},
+        yAxis: {
+          type:'value',
+          max: Math.max(...data) * 1.2,  
+          axisLabel: {
+          interval: 0,  // 纵坐标标签全部显示
+        },},
+        series: [{
+          type: 'bar',
+          data: data,
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          },
+          barWidth: '50%'
+        }]
+        }
+
+      chart.setOption(option);
+    }
+    // 扇形图
+    // function drawPieChart(chartId, data, labels) {
+    //   const chartContainer = document.getElementById(chartId);
+
+    //   new Chart(chartContainer, {
+    //     type: 'pie',
+    //     data: {
+    //       labels: labels,
+    //       datasets: [
+    //         {
+    //           data: data,
+    //           backgroundColor: [
+    //                         'rgb(255, 99, 132)',
+    //                         'rgb(54, 162, 235)',
+    //                         'rgb(255, 205, 86)',
+    //                         'rgb(205, 105, 56)',
+    //                         'rgb(75, 192, 192)',
+    //                     ],
+    //         }
+    //       ]
+    //     },
+    //     options: {
+    //       responsive: true,
+    //       maintainAspectRatio: false,
+    //     }
+    //   });
+    // }
+
+    
+
+    // 在页面加载完成后获取简历数据
+    window.addEventListener('load', () => {
+      fetchResumeData();
+      // updatePage(resumeData);
+    });
+  </script>
+    
 </body>
 </html>
