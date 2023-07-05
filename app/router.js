@@ -27,7 +27,7 @@ module.exports = app => {
   router.post('/delInfo', controller.db.delInfo);
 
   //信息统计
-  router.post('/showData', controller.showdata.dataGather);
+  router.get('/showData', controller.showdata.dataGather);
 
   //页面跳转
   router.get('/jumpData', controller.home.jumpData);

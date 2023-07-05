@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"></script>
-
+    <script src="https://cdn.jsdeliver.net/npm/echarts@latest/dist/echarts.min.js"></script>
     <script src="https://cdn.staticfile.org/Chart.js/3.9.1/chart.js"></script>
-    <link href="./many.css" rel="stylesheet" type="text/css"></link>
+    <link href="../public/css/many.css" rel="stylesheet" type="text/css"></link>
     <link rel="stylesheet" href="https://qidian.gtimg.com/lulu/edge/css/common/ui/Textarea.css">
     <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Button.css">
 	  <link rel="stylesheet" href="https://unpkg.com/lu2/theme/edge/css/common/ui/Input.css">
@@ -35,29 +35,29 @@
             Layui 框体布局内容主体区域
           </blockquote> -->
           <div class="stat-box">
-          <img src="account.svg" alt="Person Icon">
+          <img src="../public/img/account.svg" alt="Person Icon">
           <p >简历总数: <span id="total">100</span></p>
           <!-- <span class="stat-number">1000</span> -->
           </div>
         <!-- </div>
         <div class="box"> -->
           <div class="stat-box">
-          <img src="age.svg" alt="Person Icon">
-          <p class="font-sz">年龄区间:  <span id="total">19-30</span></p>
+          <img src="../public/img/age.svg" alt="Person Icon">
+          <p class="font-sz">年龄区间:  <span id="age">19-30</span></p>
           <!-- <span class="stat-number">1000</span> -->
           </div>
         <!-- </div>
         <div class="box"> -->
           <div class="stat-box">
-          <img src="gender.svg" alt="Person Icon">
-          <p >性别比例: <span id="total">2:3</span></p>
+          <img src="../public/img/gender.svg" alt="Person Icon">
+          <p >性别比例: <span id="total">15:7</span></p>
           <!-- <span class="stat-number">1000</span> -->
           </div>
         <!-- </div>
         <div class="box"> -->
           <div class="stat-box">
-          <img src="works.svg" alt="Person Icon">
-          <p >最高工作年限: <span id="total">10</span></p>
+          <img src="../public/img/works.svg" alt="Person Icon">
+          <p >最高工作年限: <span id="MaxWorkage">10</span></p>
           <!-- <span class="stat-number">1000</span> -->
           </div>
         </div>
@@ -70,7 +70,7 @@
   
     <div class="chart-container">
       <div class="exp"><canvas id="experience" class="chart"></canvas></div>
-      <div class="educ"><canvas id="education" class="chart"></canvas></div>
+      <div class="edu"><canvas id="education" class="chart"></canvas></div>
       
     </div>
 
@@ -103,7 +103,8 @@
     //       { name: '李二', age: 25, edu: '本科', graduate: '湖南大学', workage: 2 },
     //       { name: '王三', age: 30, edu: '硕士', graduate: '湖南大学', workage: 3 },
     //       { name: '赵四', age: 35, edu: '博士', graduate: '湖南大学', workage: 5},
-    //       { name: '钱五', age: 40, edu: '海归', graduate: '湖南大学', workage: 10 },{ name: '张大', age: 20, edu: '本科以下', graduate: '湖南大学', workage: 1 },
+    //       { name: '钱五', age: 40, edu: '海归', graduate: '湖南大学', workage: 10 },
+    //       { name: '张大', age: 20, edu: '本科以下', graduate: '湖南大学', workage: 1 },
     //       { name: '李二', age: 25, edu: '本科', graduate: '湖南大学', workage: 2 },
     //       { name: '王三', age: 30, edu: '硕士', graduate: '湖南大学', workage: 3 },
     //       { name: '赵四', age: 35, edu: '博士', graduate: '湖南大学', workage: 5},
@@ -112,13 +113,31 @@
     // 获取简历数据
     function fetchResumeData() {
       fetch('/showData') 
-        .then(response => response.json())
-        .then(data => {
-          updatePage(data);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     updatePage(data);
+      //   })
+      //   .catch(error => {
+      //     console.error('Error:', error);
+      //   });
+      .then(response => response.json())
+    .then(data => {
+      const resumeData = data.map(item => ({
+        name: item.name,
+        age: item.age,
+        edu: item.edu,
+        graduate: item.graduate,
+        workage: item.workage,
+      }));
+      console.log('------------------');
+      console.log(data);
+      console.log(resumeData);
+      updatePage(resumeData);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
     }
 
     function updatePage(resumeData) {
@@ -130,6 +149,11 @@
       const minAge = Math.min(...ages);
       const maxAge = Math.max(...ages);
       document.getElementById('age').textContent = `${minAge} - ${maxAge}`;
+      //最高工作年限
+      const workages = resumeData.map(resume => resume.workage);
+      const maxworkAge = Math.max(...workages);
+      document.getElementById('MaxWorkage').textContent = maxworkAge;
+
 
       // 工作经验图
       const experienceData = getexperiencedata(resumeData);
@@ -242,12 +266,22 @@
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)'
           },
-          barWidth: '40%'     //柱子粗细
+          barWidth: '40%'  ,   //柱子粗细
+          itemStyle: {
+      color: function(params) {
+        // 自定义颜色列表
+        const colors = [ '#FFE9A8', '#D9C2FF', '#FFC3A0', '#B2F9BF','#FFB3BA', '#FFD56F'];
+        // 根据索引返回对应的颜色
+        return colors[params.dataIndex % colors.length];
+      }
+    }
+
         }]
         }
 
       chart.setOption(option);
     }
+    
     function eduChart(containerId, data, categories) {
       const container = document.getElementById(containerId);
       const chart = echarts.init(container,null,{width:600,height:400});
@@ -286,7 +320,16 @@
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)'
           },
-          barWidth: '50%'
+          barWidth: '40%',
+          itemStyle: {
+      color: function(params) {
+        // 自定义颜色列表
+        const colors = ['#FE4365','#FC9D9A', ' #F9CDA9','#C8C8A9','#83AF9B'];
+        // 根据索引返回对应的颜色
+        return colors[params.dataIndex % colors.length];
+      }
+    }
+
         }]
         }
 
@@ -322,11 +365,16 @@
 
     
 
-    // 在页面加载完成后获取简历数据
-    window.addEventListener('load', () => {
-      fetchResumeData();
-      // updatePage(resumeData);
-    });
+    // // 在页面加载完成后获取简历数据
+    // window.addEventListener('load', () => {
+    //   // fetchResumeData();
+    //   updatePage(resumeData);
+    // });
+       //在页面加载完成后获取简历数据addEventListener
+       window.addEventListener("load", () => {
+       fetchResumeData();
+      //updatePage(resumeData);
+       });
   </script>
     
 </body>
