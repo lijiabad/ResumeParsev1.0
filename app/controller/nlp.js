@@ -70,6 +70,7 @@ class NlpController extends Controller {
         }
         console.log('----------------');
         console.log(NAME);
+       
         return NAME;
     }
 
@@ -189,6 +190,7 @@ class NlpController extends Controller {
             }
         }
         console.log('nianling',AGE);
+        
         return AGE;
     }
 
@@ -213,6 +215,9 @@ class NlpController extends Controller {
             }
         }
         GRADUATE.push(lastMatchedItem);
+        if(GRADUATE===null){
+            GRADUATE=['未识别到该字段'];
+        }
         return GRADUATE;
     }
 
@@ -234,7 +239,7 @@ class NlpController extends Controller {
         EDUCTION.sort((a, b) => {
             return educationMap.get(b) - educationMap.get(a);
         });
-
+        
         return EDUCTION;
     }
     async workAgeParse(result, input_text ,new_json) {
@@ -309,6 +314,7 @@ class NlpController extends Controller {
         const totalYearsCeiled = Math.ceil(totalYearsWithDecimal);
         let a = totalYears + (totalYearsWithDecimal - totalYearsFloored >= 0.5 ? totalYearsCeiled : totalYearsFloored);
         WORKAGE.push(a);
+        
         return WORKAGE;
     }
 
@@ -318,7 +324,6 @@ class NlpController extends Controller {
         // ctx.body = "------后端 nlp处理------"
         const got_text = ctx.request.body;
         // console.log("----接收到的内容：---");
-        //console.log("got_text内容");
         console.log(got_text);
         //console.log("got_text类型");
         //console.log(typeof got_text);
@@ -354,15 +359,29 @@ class NlpController extends Controller {
             AGE = await this.ageParse(result, input_text,new_json);
             /*提取毕业院校*/
             GRADUATE = await this.graduateParse(result, input_text ,new_json);
+    
             console.log(GRADUATE);
             /*提取学历：查找院校字典对应的属性  小学0、初中1、中专2、高中3、专科4、本科5、(硕士)研究生6、(博士研究生)博士7 */
             EDUCTION = await this.eduParse(result, input_text);
 
-            // console.log("学历：");
-            // console.log(EDUCTION);
-
             WORKAGE =  await this.workAgeParse(result, input_text);
-
+            if(WORKAGE===0){
+                WORKAGE=[0];
+            }
+            if(NAME.length===0){
+                NAME=['未识别到该字段'];
+            }
+            if(AGE.length===0){
+                AGE=['未识别到该字段'];
+            }
+            if(EDUCTION.length===0){
+                EDUCTION=['未识别到该字段'];
+            }
+            if(WORKAGE.length===0){
+                WORKAGE=['未识别到该字段'];
+            }
+            console.log('%%%%');
+            console.log(WORKAGE);
             // var imgocrResult = ctx.session.imgocrResult;
             // var imgocrResultJson = JSON.parse(imgocrResult);
             // console.log("imgocrResult--------------------imgocrResult");
